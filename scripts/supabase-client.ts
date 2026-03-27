@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 
 // Load .env from project root
 const __dirname = dirname(fileURLToPath(import.meta.url));
-config({ path: resolve(__dirname, "../.env") });
+config({ path: resolve(__dirname, "../.env"), override: true });
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
