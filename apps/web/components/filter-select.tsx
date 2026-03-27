@@ -21,7 +21,7 @@ export function FilterSelect({
       }}
       className={
         className ??
-        "rounded-lg border border-surface-600 bg-surface-800 px-3 py-2 text-sm text-text-primary focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20 cursor-pointer"
+        "rounded-lg border border-card-border bg-card px-3 py-2 text-sm text-text-primary focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20 cursor-pointer"
       }
     >
       {options.map((o) => (

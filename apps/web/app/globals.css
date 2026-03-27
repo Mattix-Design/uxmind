@@ -1,33 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* Deep purple/maroon palette — from brand assets */
-  --color-surface-900: #0F0515;
-  --color-surface-800: #1A0A22;
-  --color-surface-700: #2D0A31;
-  --color-surface-600: #3D1242;
-  --color-surface-500: #4E1A54;
-  --color-surface-400: #6B2870;
-  --color-surface-300: #8A3A8E;
-
-  /* Coral accent — from brand assets */
-  --color-coral-400: #F06B50;
+  --color-surface-900: #FAFAF8;
+  --color-surface-800: #F3F1EE;
+  --color-surface-700: #E8E5E0;
+  --color-surface-600: #D9D5CF;
   --color-coral-500: #E8513D;
+  --color-coral-400: #F06B50;
   --color-coral-600: #D4412E;
-  --color-coral-700: #B83525;
-
-  /* Neutral for text on dark */
-  --color-text-primary: #F5F0F7;
-  --color-text-secondary: #B8A8C0;
-  --color-text-muted: #7A6B84;
-
-  /* Card surfaces */
-  --color-card: #1E0E28;
-  --color-card-hover: #2A1435;
-  --color-card-border: #3D1242;
-
+  --color-text-primary: #1A0A22;
+  --color-text-secondary: #4A3D52;
+  --color-text-muted: #7A6E82;
+  --color-card: #FFFFFF;
+  --color-card-hover: #F8F6F3;
+  --color-card-border: #E8E5E0;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 body {
@@ -36,4 +23,65 @@ body {
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ------------------------------------------------------------------ */
+/*  UXMind chat animations                                             */
+/* ------------------------------------------------------------------ */
+
+/* Staggered section fade-in */
+.uxm-section-fade {
+  animation: uxmFadeIn 0.35s ease-out both;
+}
+
+@keyframes uxmFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Analysis progress bar */
+.uxm-progress-bar {
+  animation: uxmProgress 4s ease-in-out infinite;
+}
+
+@keyframes uxmProgress {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 75%;
+  }
+  80% {
+    width: 90%;
+  }
+  100% {
+    width: 40%;
+  }
+}
+
+/* Pulsing dots */
+.uxm-pulse-dot {
+  animation: uxmPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes uxmPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Status text fade transition */
+.uxm-status-text {
+  animation: uxmStatusFade 0.3s ease-out;
 }

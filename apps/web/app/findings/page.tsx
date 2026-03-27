@@ -39,7 +39,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const query = params.q || "";
   const activeType = params.type || "";
-  const activeView = params.view || "grid";
+  const activeView = params.view || "list";
 
   const supabase = createServerClient();
 
@@ -83,7 +83,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
     const merged: Record<string, string> = {};
     if (activeType) merged.type = activeType;
     if (query) merged.q = query;
-    if (activeView !== "grid") merged.view = activeView;
+    if (activeView !== "list") merged.view = activeView;
     Object.entries(overrides).forEach(([k, v]) => {
       if (v) merged[k] = v;
       else delete merged[k];
@@ -96,7 +96,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
     <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-text-primary">
           UX Findings
         </h1>
         <p className="mt-1 text-sm text-text-muted">
@@ -109,7 +109,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Search + Type dropdown */}
         <form action="/findings" method="GET" className="flex items-center gap-3">
-          {activeView !== "grid" && (
+          {activeView !== "list" && (
             <input type="hidden" name="view" value={activeView} />
           )}
           <div className="relative w-full sm:w-64">
@@ -119,7 +119,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
               defaultValue={query}
               placeholder="Search findings..."
               aria-label="Search findings"
-              className="w-full rounded-lg border border-surface-600 bg-surface-800 py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
+              className="w-full rounded-lg border border-card-border bg-card py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
             />
             <button
               type="submit"
@@ -150,9 +150,9 @@ export default async function FindingsPage({ searchParams }: PageProps) {
         </form>
 
         {/* View toggle */}
-        <div className="flex items-center rounded-lg border border-surface-600 bg-surface-800">
+        <div className="flex items-center rounded-lg border border-card-border bg-card">
           <Link
-            href={buildHref({ view: "" })}
+            href={buildHref({ view: "grid" })}
             className={cn(
               "flex items-center px-2.5 py-2 rounded-l-lg transition",
               activeView === "grid"
@@ -166,7 +166,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
             </svg>
           </Link>
           <Link
-            href={buildHref({ view: "list" })}
+            href={buildHref({ view: "" })}
             className={cn(
               "flex items-center px-2.5 py-2 rounded-r-lg transition",
               activeView === "list"
@@ -185,13 +185,13 @@ export default async function FindingsPage({ searchParams }: PageProps) {
 
       {/* Results */}
       {findings.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-surface-600 py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-card-border py-20 text-center">
           <p className="text-sm text-text-muted">
             No findings match your filters.
           </p>
           <Link
             href="/findings"
-            className="mt-3 text-sm font-medium text-coral-400 hover:text-coral-500"
+            className="mt-3 text-sm font-medium text-coral-500 hover:text-coral-600"
           >
             Clear filters
           </Link>
@@ -201,19 +201,19 @@ export default async function FindingsPage({ searchParams }: PageProps) {
           {findings.map((finding, i) => (
             <article
               key={`${finding.researchSlug}-${i}`}
-              className="group flex items-start gap-4 rounded-xl border border-surface-600 bg-surface-800 p-4 transition hover:border-coral-500/30"
+              className="group relative flex items-start gap-4 rounded-xl border border-card-border/50 bg-card p-4 shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
+              <Link href={`/research/${finding.researchSlug}`} className="absolute inset-0 z-0 rounded-xl" aria-label={finding.researchTitle}>
+                <span className="sr-only">{finding.researchTitle}</span>
+              </Link>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-text-primary group-hover:text-coral-400">
+                <p className="text-sm font-medium text-text-primary group-hover:text-coral-500">
                   {finding.text}
                 </p>
                 <div className="mt-1 flex items-center gap-2 text-xs text-text-muted">
-                  <Link
-                    href={`/research/${finding.researchSlug}`}
-                    className="hover:text-coral-400 transition truncate"
-                  >
+                  <span className="truncate">
                     {finding.researchTitle}
-                  </Link>
+                  </span>
                   {finding.sourceName && (
                     <>
                       <span>&middot;</span>
@@ -227,17 +227,17 @@ export default async function FindingsPage({ searchParams }: PageProps) {
                         className={cn(
                           "inline-flex items-center gap-1 font-semibold",
                           finding.qualityScore >= 85
-                            ? "text-emerald-400"
+                            ? "text-green-700"
                             : finding.qualityScore >= 70
-                              ? "text-amber-400"
+                              ? "text-amber-700"
                               : finding.qualityScore >= 65
-                                ? "text-coral-400"
-                                : "text-red-400",
+                                ? "text-coral-600"
+                                : "text-red-700",
                         )}
                       >
                         <span className={cn(
                           "h-1.5 w-1.5 rounded-full",
-                          finding.qualityScore >= 85 ? "bg-emerald-400" : finding.qualityScore >= 70 ? "bg-amber-400" : finding.qualityScore >= 65 ? "bg-coral-400" : "bg-red-400",
+                          finding.qualityScore >= 85 ? "bg-green-700" : finding.qualityScore >= 70 ? "bg-amber-700" : finding.qualityScore >= 65 ? "bg-coral-600" : "bg-red-700",
                         )} />
                         {finding.qualityScore}/100
                       </span>
@@ -245,7 +245,9 @@ export default async function FindingsPage({ searchParams }: PageProps) {
                   )}
                 </div>
               </div>
-              <CopyButton text={`${finding.text}\n— ${finding.researchTitle}${finding.sourceName ? ` (${finding.sourceName})` : ""}`} />
+              <div className="relative z-10">
+                <CopyButton text={`${finding.text}\n— ${finding.researchTitle}${finding.sourceName ? ` (${finding.sourceName})` : ""}`} />
+              </div>
             </article>
           ))}
         </div>
@@ -254,26 +256,28 @@ export default async function FindingsPage({ searchParams }: PageProps) {
           {findings.map((finding, i) => (
             <article
               key={`${finding.researchSlug}-${i}`}
-              className="group flex flex-col rounded-xl border border-surface-600 bg-surface-800 p-5 transition hover:border-coral-500/30"
+              className="group relative flex flex-col rounded-xl border border-card-border/50 bg-card p-5 shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
+              <Link href={`/research/${finding.researchSlug}`} className="absolute inset-0 z-0 rounded-xl" aria-label={finding.researchTitle}>
+                <span className="sr-only">{finding.researchTitle}</span>
+              </Link>
               {/* Finding text + copy */}
               <div className="mb-4 flex items-start gap-2">
                 <p className="flex-1 text-sm leading-relaxed text-text-primary">
                   {finding.text}
                 </p>
-                <CopyButton text={`${finding.text}\n— ${finding.researchTitle}${finding.sourceName ? ` (${finding.sourceName})` : ""}`} />
+                <div className="relative z-10">
+                  <CopyButton text={`${finding.text}\n— ${finding.researchTitle}${finding.sourceName ? ` (${finding.sourceName})` : ""}`} />
+                </div>
               </div>
 
               {/* Meta */}
               <div className="mt-auto flex flex-col gap-3">
                 {/* Parent research link + source */}
                 <div className="text-xs text-text-muted">
-                  <Link
-                    href={`/research/${finding.researchSlug}`}
-                    className="font-medium text-text-secondary hover:text-coral-400 transition"
-                  >
+                  <span className="font-medium text-text-secondary">
                     {finding.researchTitle}
-                  </Link>
+                  </span>
                   {finding.sourceName && (
                     <>
                       <span className="mx-1.5">&middot;</span>
@@ -289,17 +293,17 @@ export default async function FindingsPage({ searchParams }: PageProps) {
                       className={cn(
                         "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
                         finding.qualityScore >= 85
-                          ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
+                          ? "border-green-200 bg-green-50 text-green-700"
                           : finding.qualityScore >= 70
-                            ? "border-amber-500/30 bg-amber-500/15 text-amber-400"
+                            ? "border-amber-200 bg-amber-50 text-amber-700"
                             : finding.qualityScore >= 65
-                              ? "border-coral-500/30 bg-coral-500/15 text-coral-400"
-                              : "border-red-500/30 bg-red-500/15 text-red-400",
+                              ? "border-coral-500/20 bg-coral-500/10 text-coral-600"
+                              : "border-red-200 bg-red-50 text-red-700",
                       )}
                     >
                       <span className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        finding.qualityScore >= 85 ? "bg-emerald-400" : finding.qualityScore >= 70 ? "bg-amber-400" : finding.qualityScore >= 65 ? "bg-coral-400" : "bg-red-400",
+                        finding.qualityScore >= 85 ? "bg-green-700" : finding.qualityScore >= 70 ? "bg-amber-700" : finding.qualityScore >= 65 ? "bg-coral-600" : "bg-red-700",
                       )} />
                       {finding.qualityScore}
                     </span>
@@ -308,7 +312,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
                     finding.tags.map((tag: string) => (
                       <span
                         key={tag}
-                        className="rounded-md bg-surface-700 px-2 py-0.5 text-[11px] text-text-muted"
+                        className="rounded-md bg-surface-800 px-2 py-0.5 text-[11px] text-text-muted"
                       >
                         {tag}
                       </span>

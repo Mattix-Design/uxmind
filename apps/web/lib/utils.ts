@@ -32,8 +32,8 @@ export function siteContextLabel(context: string): string {
 }
 
 export function getScoreTheme(score: number) {
-  if (score >= 85) return { color: "text-emerald-400", bg: "bg-emerald-500/15", border: "border-emerald-500/30", dot: "bg-emerald-400", label: "Strong" };
-  if (score >= 70) return { color: "text-amber-400", bg: "bg-amber-500/15", border: "border-amber-500/30", dot: "bg-amber-400", label: "Good" };
-  if (score >= 65) return { color: "text-coral-400", bg: "bg-coral-500/15", border: "border-coral-500/30", dot: "bg-coral-400", label: "Moderate" };
-  return { color: "text-red-400", bg: "bg-red-500/15", border: "border-red-500/30", dot: "bg-red-400", label: "Limited" };
+  if (score >= 85) return { color: "text-green-700", bg: "bg-green-50", border: "border-green-200", dot: "bg-green-700", label: "Strong" };
+  if (score >= 70) return { color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-200", dot: "bg-amber-700", label: "Good" };
+  if (score >= 65) return { color: "text-coral-600", bg: "bg-coral-500/10", border: "border-coral-500/20", dot: "bg-coral-600", label: "Moderate" };
+  return { color: "text-red-700", bg: "bg-red-50", border: "border-red-200", dot: "bg-red-700", label: "Limited" };
 }

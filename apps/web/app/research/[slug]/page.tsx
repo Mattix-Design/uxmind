@@ -50,11 +50,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const entry = await getEntry(slug);
   if (!entry) return { title: "Not Found" };
+  const ogTitle = entry.title;
+  const ogType = entry.research_type
+    ? entry.research_type.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
+    : "Research";
   return {
     title: `${entry.title} — UXMind.ai`,
     description:
       entry.attributed_summary?.slice(0, 160) ??
       `UX research: ${entry.title}`,
+    openGraph: {
+      title: `${entry.title} — UXMind.ai`,
+      description:
+        entry.attributed_summary?.slice(0, 160) ??
+        `UX research: ${entry.title}`,
+      images: [
+        {
+          url: `/api/og?title=${encodeURIComponent(ogTitle)}&type=${encodeURIComponent(ogType)}`,
+          width: 1200,
+          height: 630,
+          alt: entry.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${entry.title} — UXMind.ai`,
+      images: [`/api/og?title=${encodeURIComponent(ogTitle)}&type=${encodeURIComponent(ogType)}`],
+    },
   };
 }
 
@@ -67,16 +90,16 @@ export default async function ResearchDetailPage({ params }: PageProps) {
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
       <nav className="mb-8 flex items-center gap-1.5 text-sm text-text-muted">
-        <Link href="/research" className="hover:text-coral-400 transition-colors">
+        <Link href="/research" className="hover:text-coral-500 transition-colors">
           Research
         </Link>
-        <span className="text-surface-600">/</span>
+        <span className="text-surface-700">/</span>
         <span className="truncate text-text-secondary">{entry.title}</span>
       </nav>
 
       {/* Title and metadata */}
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-text-primary">
           {entry.title}
         </h1>
 
@@ -96,7 +119,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
               href={entry.source_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-medium text-coral-400 hover:text-coral-500 transition-colors"
+              className="inline-flex items-center gap-1 font-medium text-coral-500 hover:text-coral-600 transition-colors"
             >
               View source
               <svg
@@ -118,7 +141,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
 
         {/* Research type pill + Evidence Score */}
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <span className="rounded-full bg-coral-500/10 px-3 py-1 text-xs font-medium text-coral-400">
+          <span className="rounded-full bg-coral-500/10 px-3 py-1 text-xs font-medium text-coral-600">
             {researchTypeLabel(entry.research_type)}
           </span>
           {entry.quality_score != null && (
@@ -126,17 +149,17 @@ export default async function ResearchDetailPage({ params }: PageProps) {
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold",
                 entry.quality_score >= 85
-                  ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
+                  ? "border-green-200 bg-green-50 text-green-700"
                   : entry.quality_score >= 70
-                    ? "border-amber-500/30 bg-amber-500/15 text-amber-400"
+                    ? "border-amber-200 bg-amber-50 text-amber-700"
                     : entry.quality_score >= 65
-                      ? "border-coral-500/30 bg-coral-500/15 text-coral-400"
-                      : "border-red-500/30 bg-red-500/15 text-red-400",
+                      ? "border-coral-500/20 bg-coral-500/10 text-coral-600"
+                      : "border-red-200 bg-red-50 text-red-700",
               )}
             >
               <span className={cn(
                 "h-2 w-2 rounded-full",
-                entry.quality_score >= 85 ? "bg-emerald-400" : entry.quality_score >= 70 ? "bg-amber-400" : entry.quality_score >= 65 ? "bg-coral-400" : "bg-red-400",
+                entry.quality_score >= 85 ? "bg-green-700" : entry.quality_score >= 70 ? "bg-amber-700" : entry.quality_score >= 65 ? "bg-coral-600" : "bg-red-700",
               )} />
               Evidence Score: {entry.quality_score}/100
             </span>
@@ -147,7 +170,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
         <div className="mt-4 flex items-center gap-2">
           <CopyButton
             text={[entry.title, entry.attributed_summary, entry.source_url].filter(Boolean).join("\n")}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-surface-600 bg-surface-800 px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:border-surface-500 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-card-border bg-card px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:shadow-sm transition cursor-pointer"
           />
           <ShareButton
             url={`https://uxmind.ai/research/${entry.slug}`}
@@ -166,7 +189,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
       {/* Summary cards */}
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Key Findings */}
-        <div className="rounded-xl border border-surface-600 bg-surface-800 p-4">
+        <div className="rounded-xl border border-card-border/50 bg-card p-4 shadow-sm">
           <div className="flex items-center gap-2 text-text-muted">
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 3v18h18" />
@@ -181,7 +204,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
         </div>
 
         {/* Methodology */}
-        <div className="rounded-xl border border-surface-600 bg-surface-800 p-4">
+        <div className="rounded-xl border border-card-border/50 bg-card p-4 shadow-sm">
           <div className="flex items-center gap-2 text-text-muted">
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
@@ -199,7 +222,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
         </div>
 
         {/* Limitations */}
-        <div className="rounded-xl border border-surface-600 bg-surface-800 p-4">
+        <div className="rounded-xl border border-card-border/50 bg-card p-4 shadow-sm">
           <div className="flex items-center gap-2 text-text-muted">
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
               <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
@@ -219,8 +242,8 @@ export default async function ResearchDetailPage({ params }: PageProps) {
       {/* Summary */}
       {entry.attributed_summary && (
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-text-primary">Summary</h2>
-          <div className="mt-3 rounded-xl border-l-2 border-coral-500 bg-surface-800 p-5">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">Summary</h2>
+          <div className="mt-3 rounded-xl border-l-2 border-coral-500 bg-card p-5 shadow-sm">
             <p className="text-sm leading-relaxed text-text-secondary">
               {entry.attributed_summary}
             </p>
@@ -231,7 +254,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
       {/* Key findings */}
       {entry.key_findings && entry.key_findings.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-text-primary">Key Findings</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">Key Findings</h2>
           <ul className="mt-3 space-y-2">
             {entry.key_findings.map((finding, i) => (
               <li
@@ -249,8 +272,8 @@ export default async function ResearchDetailPage({ params }: PageProps) {
       {/* Methodology */}
       {(entry.methodology_summary || entry.sample_size) && (
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-text-primary">Methodology</h2>
-          <div className="mt-3 rounded-xl border border-surface-600 bg-surface-800 p-5">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">Methodology</h2>
+          <div className="mt-3 rounded-xl border border-card-border/50 bg-card p-5 shadow-sm">
             {entry.methodology_summary && (
               <p className="text-sm leading-relaxed text-text-secondary">
                 {entry.methodology_summary}
@@ -269,14 +292,14 @@ export default async function ResearchDetailPage({ params }: PageProps) {
       {/* Limitations */}
       {entry.limitations && entry.limitations.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-text-primary">Limitations</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">Limitations</h2>
           <ul className="mt-3 space-y-2">
             {entry.limitations.map((limitation, i) => (
               <li
                 key={i}
                 className="flex items-start gap-2.5 text-sm leading-relaxed text-text-muted"
               >
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-surface-600" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-surface-700" />
                 {limitation}
               </li>
             ))}
@@ -288,14 +311,14 @@ export default async function ResearchDetailPage({ params }: PageProps) {
       {((entry.tags && entry.tags.length > 0) ||
         (entry.site_contexts && entry.site_contexts.length > 0)) && (
         <section className="mt-10">
-          <h2 className="text-lg font-semibold text-text-primary">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary">
             Tags &amp; Contexts
           </h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {entry.tags?.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-surface-700 px-3 py-1 text-xs font-medium text-text-muted"
+                className="rounded-full bg-surface-800 px-3 py-1 text-xs font-medium text-text-muted"
               >
                 {tag}
               </span>
@@ -303,7 +326,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
             {entry.site_contexts?.map((ctx) => (
               <span
                 key={ctx}
-                className="rounded-full border border-surface-600 px-3 py-1 text-xs font-medium text-text-muted"
+                className="rounded-full border border-card-border px-3 py-1 text-xs font-medium text-text-muted"
               >
                 {siteContextLabel(ctx)}
               </span>
@@ -316,7 +339,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
       <div className="mt-14 border-t border-surface-700 pt-8">
         <Link
           href="/research"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-coral-400 hover:text-coral-500 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-coral-500 hover:text-coral-600 transition-colors"
         >
           <svg
             className="h-4 w-4"

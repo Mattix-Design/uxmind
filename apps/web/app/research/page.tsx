@@ -49,7 +49,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
   const activeContext = params.context || "";
   const activeSort = params.sort || "publication_date_desc";
   const query = params.q || "";
-  const activeView = params.view || "grid";
+  const activeView = params.view || "list";
 
   const sortOption =
     SORT_OPTIONS.find((s) => s.value === activeSort) || SORT_OPTIONS[0];
@@ -89,7 +89,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
     if (activeContext) merged.context = activeContext;
     if (activeSort !== "publication_date_desc") merged.sort = activeSort;
     if (query) merged.q = query;
-    if (activeView !== "grid") merged.view = activeView;
+    if (activeView !== "list") merged.view = activeView;
     Object.entries(overrides).forEach(([k, v]) => {
       if (v) merged[k] = v;
       else delete merged[k];
@@ -102,7 +102,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
     <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-text-primary">
           Research Library
         </h1>
         <p className="mt-1 text-sm text-text-muted">
@@ -118,7 +118,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
             {activeType && <input type="hidden" name="type" value={activeType} />}
             {activeContext && <input type="hidden" name="context" value={activeContext} />}
             {activeSort !== "publication_date_desc" && <input type="hidden" name="sort" value={activeSort} />}
-            {activeView !== "grid" && <input type="hidden" name="view" value={activeView} />}
+            {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
             <div className="relative">
               <input
                 type="text"
@@ -126,7 +126,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
                 defaultValue={query}
                 placeholder="Search by title..."
                 aria-label="Search research"
-                className="w-full rounded-lg border border-surface-600 bg-surface-800 py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
+                className="w-full rounded-lg border border-card-border bg-card py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
               />
               <button
                 type="submit"
@@ -143,7 +143,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
           {/* Dropdowns */}
           <form action="/research" method="GET" className="flex flex-wrap items-center gap-3">
             {query && <input type="hidden" name="q" value={query} />}
-            {activeView !== "grid" && <input type="hidden" name="view" value={activeView} />}
+            {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
 
             <FilterSelect
               name="type"
@@ -170,9 +170,9 @@ export default async function ResearchPage({ searchParams }: PageProps) {
             />
 
             {/* View toggle */}
-            <div className="flex items-center rounded-lg border border-surface-600 bg-surface-800">
+            <div className="flex items-center rounded-lg border border-card-border bg-card">
               <Link
-                href={buildHref({ view: "" })}
+                href={buildHref({ view: "grid" })}
                 aria-label="Grid view"
                 className={cn(
                   "flex items-center px-2.5 py-2 rounded-l-lg transition",
@@ -186,7 +186,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
                 </svg>
               </Link>
               <Link
-                href={buildHref({ view: "list" })}
+                href={buildHref({ view: "" })}
                 aria-label="List view"
                 className={cn(
                   "flex items-center px-2.5 py-2 rounded-r-lg transition",
@@ -207,9 +207,9 @@ export default async function ResearchPage({ searchParams }: PageProps) {
 
       {/* Results */}
       {results.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-surface-600 py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-card-border py-20 text-center">
           <p className="text-sm text-text-muted">No research entries match your filters.</p>
-          <Link href="/research" className="mt-3 text-sm font-medium text-coral-400 hover:text-coral-500">
+          <Link href="/research" className="mt-3 text-sm font-medium text-coral-500 hover:text-coral-600">
             Clear filters
           </Link>
         </div>
@@ -219,11 +219,14 @@ export default async function ResearchPage({ searchParams }: PageProps) {
           {results.map((entry: any) => (
             <article
               key={entry.id}
-              className="group flex items-start gap-4 rounded-xl border border-surface-600 bg-surface-800 p-4 transition hover:border-coral-500/30"
+              className="group relative flex items-start gap-4 rounded-xl border border-card-border/50 bg-card p-4 shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
+              <Link href={`/research/${entry.slug}`} className="absolute inset-0 z-0 rounded-xl" aria-label={entry.title}>
+                <span className="sr-only">{entry.title}</span>
+              </Link>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-400">
+                  <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-600">
                     {researchTypeLabel(entry.research_type)}
                   </span>
                   {entry.quality_score != null && (
@@ -231,28 +234,25 @@ export default async function ResearchPage({ searchParams }: PageProps) {
                       className={cn(
                         "inline-flex items-center gap-1 text-[11px] font-semibold",
                         entry.quality_score >= 85
-                          ? "text-emerald-400"
+                          ? "text-green-700"
                           : entry.quality_score >= 70
-                            ? "text-amber-400"
+                            ? "text-amber-700"
                             : entry.quality_score >= 65
-                              ? "text-coral-400"
-                              : "text-red-400",
+                              ? "text-coral-600"
+                              : "text-red-700",
                       )}
                     >
                       <span className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        entry.quality_score >= 85 ? "bg-emerald-400" : entry.quality_score >= 70 ? "bg-amber-400" : entry.quality_score >= 65 ? "bg-coral-400" : "bg-red-400",
+                        entry.quality_score >= 85 ? "bg-green-700" : entry.quality_score >= 70 ? "bg-amber-700" : entry.quality_score >= 65 ? "bg-coral-600" : "bg-red-700",
                       )} />
                       {entry.quality_score}/100
                     </span>
                   )}
                 </div>
-                <Link
-                  href={`/research/${entry.slug}`}
-                  className="text-sm font-semibold text-text-primary group-hover:text-coral-400 transition"
-                >
+                <h2 className="text-sm font-semibold text-text-primary group-hover:text-coral-500 transition">
                   {entry.title}
-                </Link>
+                </h2>
                 <p className="mt-0.5 text-xs text-text-muted">
                   {entry.source_name}
                   {entry.publication_date && ` \u00b7 ${formatDate(entry.publication_date)}`}
@@ -263,9 +263,11 @@ export default async function ResearchPage({ searchParams }: PageProps) {
                   </p>
                 )}
               </div>
-              <CopyButton
-                text={[entry.title, entry.attributed_summary, entry.source_url].filter(Boolean).join("\n")}
-              />
+              <div className="relative z-10">
+                <CopyButton
+                  text={[entry.title, entry.attributed_summary, entry.source_url].filter(Boolean).join("\n")}
+                />
+              </div>
             </article>
           ))}
         </div>
@@ -275,12 +277,15 @@ export default async function ResearchPage({ searchParams }: PageProps) {
           {results.map((entry: any) => (
             <article
               key={entry.id}
-              className="group flex flex-col rounded-xl border border-surface-600 bg-surface-800 transition hover:border-coral-500/30"
+              className="group relative flex flex-col rounded-xl border border-card-border/50 bg-card shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
+              <Link href={`/research/${entry.slug}`} className="absolute inset-0 z-0 rounded-xl" aria-label={entry.title}>
+                <span className="sr-only">{entry.title}</span>
+              </Link>
               <div className="flex flex-1 flex-col p-5">
                 {/* Research type pill + Evidence Score + Copy */}
                 <div className="mb-3 flex items-center gap-2">
-                  <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-400">
+                  <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-600">
                     {researchTypeLabel(entry.research_type)}
                   </span>
                   {entry.quality_score != null && (
@@ -288,38 +293,37 @@ export default async function ResearchPage({ searchParams }: PageProps) {
                       className={cn(
                         "ml-auto inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
                         entry.quality_score >= 85
-                          ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-400"
+                          ? "border-green-200 bg-green-50 text-green-700"
                           : entry.quality_score >= 70
-                            ? "border-amber-500/30 bg-amber-500/15 text-amber-400"
+                            ? "border-amber-200 bg-amber-50 text-amber-700"
                             : entry.quality_score >= 65
-                              ? "border-coral-500/30 bg-coral-500/15 text-coral-400"
-                              : "border-red-500/30 bg-red-500/15 text-red-400",
+                              ? "border-coral-500/20 bg-coral-500/10 text-coral-600"
+                              : "border-red-200 bg-red-50 text-red-700",
                       )}
                       title="Evidence Score"
                     >
                       <span className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        entry.quality_score >= 85 ? "bg-emerald-400" : entry.quality_score >= 70 ? "bg-amber-400" : entry.quality_score >= 65 ? "bg-coral-400" : "bg-red-400",
+                        entry.quality_score >= 85 ? "bg-green-700" : entry.quality_score >= 70 ? "bg-amber-700" : entry.quality_score >= 65 ? "bg-coral-600" : "bg-red-700",
                       )} />
                       {entry.quality_score}/100
                     </span>
                   )}
-                  <CopyButton
-                    text={[entry.title, entry.attributed_summary, entry.source_url].filter(Boolean).join("\n")}
-                    className={cn(
-                      "shrink-0 rounded-md p-1 text-text-muted hover:text-text-secondary hover:bg-surface-700 transition cursor-pointer",
-                      entry.quality_score == null && "ml-auto",
-                    )}
-                  />
+                  <div className="relative z-10">
+                    <CopyButton
+                      text={[entry.title, entry.attributed_summary, entry.source_url].filter(Boolean).join("\n")}
+                      className={cn(
+                        "shrink-0 rounded-md p-1 text-text-muted hover:text-text-secondary hover:bg-surface-800 transition cursor-pointer",
+                        entry.quality_score == null && "ml-auto",
+                      )}
+                    />
+                  </div>
                 </div>
 
                 {/* Title */}
-                <Link
-                  href={`/research/${entry.slug}`}
-                  className="mb-1 text-base font-semibold leading-snug text-text-primary group-hover:text-coral-400 transition"
-                >
+                <h2 className="mb-1 text-base font-semibold leading-snug text-text-primary group-hover:text-coral-500 transition">
                   {entry.title}
-                </Link>
+                </h2>
 
                 {/* Source + date */}
                 <p className="mb-3 text-xs text-text-muted">
@@ -347,7 +351,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
                     entry.tags.map((tag: string) => (
                       <span
                         key={tag}
-                        className="rounded-md bg-surface-700 px-2 py-0.5 text-[11px] text-text-muted"
+                        className="rounded-md bg-surface-800 px-2 py-0.5 text-[11px] text-text-muted"
                       >
                         {tag}
                       </span>
@@ -356,7 +360,7 @@ export default async function ResearchPage({ searchParams }: PageProps) {
                     entry.site_contexts.map((ctx: string) => (
                       <span
                         key={ctx}
-                        className="rounded-md border border-surface-600 px-2 py-0.5 text-[11px] text-text-muted"
+                        className="rounded-md border border-card-border px-2 py-0.5 text-[11px] text-text-muted"
                       >
                         {siteContextLabel(ctx)}
                       </span>

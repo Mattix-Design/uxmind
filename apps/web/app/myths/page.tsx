@@ -21,7 +21,7 @@ function sanitizeQuery(q: string): string {
 export default async function MythsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const query = sanitizeQuery(params.q?.trim() ?? "");
-  const activeView = params.view || "grid";
+  const activeView = params.view || "list";
 
   const supabase = createServerClient();
 
@@ -41,7 +41,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
   function buildHref(overrides: Record<string, string>) {
     const merged: Record<string, string> = {};
     if (query) merged.q = query;
-    if (activeView !== "grid") merged.view = activeView;
+    if (activeView !== "list") merged.view = activeView;
     Object.entries(overrides).forEach(([k, v]) => {
       if (v) merged[k] = v;
       else delete merged[k];
@@ -52,7 +52,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+      <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-text-primary">
         Debunked UX Myths
       </h1>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-text-muted">
@@ -63,7 +63,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         {/* Search */}
         <form action="/myths" method="GET" className="w-full sm:max-w-xs">
-          {activeView !== "grid" && <input type="hidden" name="view" value={activeView} />}
+          {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
           <div className="relative">
             <input
               type="text"
@@ -71,7 +71,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
               defaultValue={query}
               placeholder="Search myths..."
               aria-label="Search myths"
-              className="w-full rounded-lg border border-surface-600 bg-surface-800 py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
+              className="w-full rounded-lg border border-card-border bg-card py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
             />
             <button
               type="submit"
@@ -86,9 +86,9 @@ export default async function MythsPage({ searchParams }: PageProps) {
         </form>
 
         {/* View toggle */}
-        <div className="flex items-center rounded-lg border border-surface-600 bg-surface-800">
+        <div className="flex items-center rounded-lg border border-card-border bg-card">
           <Link
-            href={buildHref({ view: "" })}
+            href={buildHref({ view: "grid" })}
             aria-label="Grid view"
             className={cn(
               "flex items-center px-2.5 py-2 rounded-l-lg transition",
@@ -102,7 +102,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
             </svg>
           </Link>
           <Link
-            href={buildHref({ view: "list" })}
+            href={buildHref({ view: "" })}
             aria-label="List view"
             className={cn(
               "flex items-center px-2.5 py-2 rounded-r-lg transition",
@@ -121,9 +121,9 @@ export default async function MythsPage({ searchParams }: PageProps) {
 
       {/* Results */}
       {items.length === 0 ? (
-        <div className="mt-10 flex flex-col items-center justify-center rounded-xl border border-dashed border-surface-600 py-20 text-center">
+        <div className="mt-10 flex flex-col items-center justify-center rounded-xl border border-dashed border-card-border py-20 text-center">
           <p className="text-sm text-text-muted">No results match your filters.</p>
-          <Link href="/myths" className="mt-3 text-sm font-medium text-coral-400 hover:text-coral-500">Clear filters</Link>
+          <Link href="/myths" className="mt-3 text-sm font-medium text-coral-500 hover:text-coral-600">Clear filters</Link>
         </div>
       ) : activeView === "list" ? (
         /* List view */
@@ -131,7 +131,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
           {items.map((myth, i) => (
             <article
               key={i}
-              className="group flex items-start gap-4 rounded-xl border border-surface-600 bg-surface-800 p-4 transition hover:border-coral-500/30"
+              className="flex items-start gap-4 rounded-xl border border-card-border/50 bg-card p-4 shadow-sm"
             >
               <div className="flex-1 min-w-0">
                 <h2 className="text-sm font-semibold text-text-primary">
@@ -155,21 +155,21 @@ export default async function MythsPage({ searchParams }: PageProps) {
           {items.map((myth, i) => (
             <article
               key={i}
-              className="flex flex-col rounded-xl border border-surface-600 bg-surface-800 p-5 transition hover:border-coral-500/30"
+              className="flex flex-col rounded-xl border border-card-border/50 bg-card p-5 shadow-sm"
             >
               <h2 className="text-lg font-semibold text-text-primary">
                 &ldquo;{myth.myth}&rdquo;
               </h2>
 
               <div className="mt-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-coral-400">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-coral-600">
                   Reality
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-text-secondary">{myth.reality}</p>
               </div>
 
               {myth.source_attribution && (
-                <div className="mt-4 rounded-lg border-l-2 border-coral-500 bg-surface-700/50 p-4">
+                <div className="mt-4 rounded-lg border-l-2 border-coral-500 bg-surface-800/50 p-4">
                   <p className="text-xs leading-relaxed text-text-muted">
                     {myth.source_attribution}
                   </p>

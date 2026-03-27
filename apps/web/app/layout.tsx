@@ -6,6 +6,28 @@ export const metadata: Metadata = {
   title: "UXMind.ai — Still designing for humans",
   description:
     "AI-powered UX research knowledge base. Ask questions about evidence-based UX, browse vetted research, and explore UX laws.",
+  openGraph: {
+    title: "UXMind.ai — Still designing for humans",
+    description:
+      "AI-powered UX research knowledge base. Ask questions about evidence-based UX, browse vetted research, and explore UX laws.",
+    images: [
+      {
+        url: "/api/og?title=Evidence-based%20UX%20Research&type=UXMind.ai",
+        width: 1200,
+        height: 630,
+        alt: "UXMind.ai — Evidence-based UX Research",
+      },
+    ],
+    siteName: "UXMind.ai",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "UXMind.ai — Still designing for humans",
+    description:
+      "AI-powered UX research knowledge base. Ask questions about evidence-based UX, browse vetted research, and explore UX laws.",
+    images: ["/api/og?title=Evidence-based%20UX%20Research&type=UXMind.ai"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

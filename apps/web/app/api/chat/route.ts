@@ -146,6 +146,10 @@ RULES:
   If a point is based on general knowledge rather than a specific study, write: 🔬 Evidence: General knowledge
 - Keep each section concise — 2-4 sentences max per section
 - Do NOT say "high confidence" or "low confidence" — always use the actual score and label (Strong/Good/Moderate/Limited)
+- At the END of each ## section body, include a citation line in EXACTLY this format (on its own line):
+  📎 Source: [Study Title](source_url) — Author Name(s), Year
+  Use the actual study title, URL, and authors from the research context provided. If a section draws from multiple studies, cite the primary one. If a section is general knowledge with no specific source, omit the citation line for that section.
+- At the very END of your entire response, output a special marker line: ---FOLLOWUPS--- followed by exactly 2-3 related follow-up questions the user might want to ask, one per line. These should be specific and related to the topic discussed. Do NOT include any other text after the follow-up questions.
 
 `;
 

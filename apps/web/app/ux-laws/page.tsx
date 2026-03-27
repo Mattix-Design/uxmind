@@ -34,7 +34,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const query = sanitizeQuery(params.q?.trim() ?? "");
   const activeCategory = params.category || "";
-  const activeView = params.view || "grid";
+  const activeView = params.view || "list";
 
   const supabase = createServerClient();
 
@@ -62,7 +62,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
     const merged: Record<string, string> = {};
     if (query) merged.q = query;
     if (activeCategory) merged.category = activeCategory;
-    if (activeView !== "grid") merged.view = activeView;
+    if (activeView !== "list") merged.view = activeView;
     Object.entries(overrides).forEach(([k, v]) => {
       if (v) merged[k] = v;
       else delete merged[k];
@@ -74,7 +74,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-text-primary">
           UX Laws &amp; Principles
         </h1>
         <p className="mt-2 text-sm text-text-muted">
@@ -87,7 +87,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
         {/* Search */}
         <form action="/ux-laws" method="GET" className="w-full sm:max-w-xs">
           {activeCategory && <input type="hidden" name="category" value={activeCategory} />}
-          {activeView !== "grid" && <input type="hidden" name="view" value={activeView} />}
+          {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
           <div className="relative">
             <input
               type="text"
@@ -95,7 +95,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
               defaultValue={query}
               placeholder="Search laws..."
               aria-label="Search UX laws"
-              className="w-full rounded-lg border border-surface-600 bg-surface-800 py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
+              className="w-full rounded-lg border border-card-border bg-card py-2 pl-3 pr-10 text-sm text-text-primary shadow-sm transition placeholder:text-text-muted focus:border-coral-500 focus:outline-none focus:ring-2 focus:ring-coral-500/20"
             />
             <button
               type="submit"
@@ -112,7 +112,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
         {/* Dropdowns + View Toggle */}
         <form action="/ux-laws" method="GET" className="flex flex-wrap items-center gap-3">
           {query && <input type="hidden" name="q" value={query} />}
-          {activeView !== "grid" && <input type="hidden" name="view" value={activeView} />}
+          {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
 
           <FilterSelect
             name="category"
@@ -124,9 +124,9 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
           />
 
           {/* View toggle */}
-          <div className="flex items-center rounded-lg border border-surface-600 bg-surface-800">
+          <div className="flex items-center rounded-lg border border-card-border bg-card">
             <Link
-              href={buildHref({ view: "" })}
+              href={buildHref({ view: "grid" })}
               aria-label="Grid view"
               className={cn(
                 "flex items-center px-2.5 py-2 rounded-l-lg transition",
@@ -140,7 +140,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
               </svg>
             </Link>
             <Link
-              href={buildHref({ view: "list" })}
+              href={buildHref({ view: "" })}
               aria-label="List view"
               className={cn(
                 "flex items-center px-2.5 py-2 rounded-r-lg transition",
@@ -160,9 +160,9 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
 
       {/* Results */}
       {items.length === 0 ? (
-        <div className="mt-10 flex flex-col items-center justify-center rounded-xl border border-dashed border-surface-600 py-20 text-center">
+        <div className="mt-10 flex flex-col items-center justify-center rounded-xl border border-dashed border-card-border py-20 text-center">
           <p className="text-sm text-text-muted">No results match your filters.</p>
-          <Link href="/ux-laws" className="mt-3 text-sm font-medium text-coral-400 hover:text-coral-500">Clear filters</Link>
+          <Link href="/ux-laws" className="mt-3 text-sm font-medium text-coral-500 hover:text-coral-600">Clear filters</Link>
         </div>
       ) : activeView === "list" ? (
         /* List view */
@@ -171,17 +171,17 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
             <Link
               key={law.slug}
               href={`/ux-laws/${law.slug}`}
-              className="group flex items-start gap-4 rounded-xl border border-surface-600 bg-surface-800 p-4 transition hover:border-coral-500/30"
+              className="group flex items-start gap-4 rounded-xl border border-card-border/50 bg-card p-4 shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   {law.category && (
-                    <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-400 capitalize">
+                    <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-600 capitalize">
                       {law.category}
                     </span>
                   )}
                 </div>
-                <h2 className="text-sm font-semibold text-text-primary group-hover:text-coral-400 transition">
+                <h2 className="text-sm font-semibold text-text-primary group-hover:text-coral-500 transition">
                   {law.name}
                 </h2>
                 <p className="mt-0.5 text-xs text-text-secondary line-clamp-2">
@@ -198,14 +198,14 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
             <Link
               key={law.slug}
               href={`/ux-laws/${law.slug}`}
-              className="group flex flex-col rounded-xl border border-surface-600 bg-surface-800 p-5 transition hover:border-coral-500/40 hover:shadow-lg hover:shadow-coral-500/5"
+              className="group flex flex-col rounded-xl border border-card-border/50 bg-card p-5 shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
               {law.category && (
-                <span className="mb-3 inline-flex w-fit rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-400 capitalize">
+                <span className="mb-3 inline-flex w-fit rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-600 capitalize">
                   {law.category}
                 </span>
               )}
-              <h2 className="text-base font-semibold text-text-primary group-hover:text-coral-400">
+              <h2 className="text-base font-semibold text-text-primary group-hover:text-coral-500">
                 {law.name}
               </h2>
               <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-text-secondary">
