@@ -1,0 +1,915 @@
+{
+  "checkedAt": "2026-03-28T13:53:04.375Z",
+  "totalEntries": 169,
+  "okCount": 96,
+  "brokenCount": 73,
+  "redirectedCount": 35,
+  "broken": [
+    {
+      "id": "d2381ca8-ec42-404e-8b43-48d67f980f5e",
+      "slug": "account-and-registration-usability-guest-checkout-vs-account-creation",
+      "title": "Account and Registration Usability: Guest Checkout vs Account Creation",
+      "source_url": "https://baymard.com/research/account-and-registration",
+      "source_name": "Baymard Institute",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "4df53cad-8eb1-4cd6-9836-bf74436f060e",
+      "slug": "applying-gestalt-principles-to-user-interface-design-an-empirical-study",
+      "title": "Applying Gestalt Principles to User Interface Design: An Empirical Study",
+      "source_url": "https://doi.org/10.1145/3411764.3445623",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "82e8e9ce-75bc-4f27-a2b2-f4436110b3e7",
+      "slug": "attention-and-banner-blindness-in-2024-how-ad-like-content-is-ignored",
+      "title": "Attention and Banner Blindness in 2024: How Ad-Like Content Is Ignored",
+      "source_url": "https://www.nngroup.com/articles/banner-blindness-revisited/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "be3888a6-d0b8-4af5-b080-4cfa6baa408e",
+      "slug": "attention-and-banner-blindness-eye-tracking-evidence",
+      "title": "Attention and Banner Blindness: Eye-Tracking Evidence",
+      "source_url": "https://doi.org/10.1145/997078.997089",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "9d87184d-6af0-497f-b6e7-c3b3dccecfc9",
+      "slug": "button-design-and-click-through-rates-a-b-testing-meta-analysis",
+      "title": "Button Design and Click-Through Rates: A/B Testing Meta-Analysis",
+      "source_url": "https://cxl.com/research/button-design/",
+      "source_name": "CXL Institute",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "73918992-3e8b-4794-a2fe-00e1c90f2b73",
+      "slug": "checkboxes-vs-toggle-switches-when-to-use-which",
+      "title": "Checkboxes vs Toggle Switches: When to Use Which",
+      "source_url": "https://www.smashingmagazine.com/2022/08/checkboxes-toggles/",
+      "source_name": "Smashing Magazine",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "3751bcd6-7319-4e12-980b-a42a9ed6e758",
+      "slug": "cognitive-accessibility-how-people-with-cognitive-disabilities-use-the-web",
+      "title": "Cognitive Accessibility: How People with Cognitive Disabilities Use the Web",
+      "source_url": "https://www.w3.org/WAI/people-use-web/abilities-barriers/cognitive/",
+      "source_name": "W3C / Web Accessibility Initiative",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "7d9f030a-3355-4bc6-bd05-e961fa9ecc19",
+      "slug": "colour-contrast-and-readability-impact-on-comprehension-and-user-satisfaction",
+      "title": "Colour Contrast and Readability: Impact on Comprehension and User Satisfaction",
+      "source_url": "https://www.nngroup.com/articles/color-contrast-accessibility/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "a7491a43-620f-4545-9159-debf61e83c23",
+      "slug": "content-engagement-time-on-page-scroll-depth-and-attention-metrics-across-industries",
+      "title": "Content Engagement: Time on Page, Scroll Depth, and Attention Metrics Across Industries",
+      "source_url": "https://contentsquare.com/blog/digital-experience-benchmarks/",
+      "source_name": "Contentsquare",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "4268a094-c76f-4fd9-b798-9e33661c6adc",
+      "slug": "contentsquare-e-commerce-benchmark-cart-and-checkout-friction-analysis",
+      "title": "Contentsquare E-Commerce Benchmark: Cart and Checkout Friction Analysis",
+      "source_url": "https://contentsquare.com/insights/ecommerce-benchmark/",
+      "source_name": "Contentsquare",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "fdda0c56-4c77-443a-a806-087f5062bc0d",
+      "slug": "contentsquare-frustration-signals-rage-clicks-dead-clicks-and-error-clicks",
+      "title": "Contentsquare Frustration Signals: Rage Clicks, Dead Clicks, and Error Clicks",
+      "source_url": "https://contentsquare.com/insights/frustration-signals/",
+      "source_name": "Contentsquare",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "600c63d4-aa9e-43a7-9eb2-a92b4b326e5c",
+      "slug": "conversational-ui-user-expectations-and-experiences-with-chatbots",
+      "title": "Conversational UI: User Expectations and Experiences with Chatbots",
+      "source_url": "https://doi.org/10.1145/3313831.3376149",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "4261aeb8-68ac-4ae7-a190-10ffcf1bf2d3",
+      "slug": "dark-patterns-at-scale-findings-from-a-crawl-of-11k-shopping-websites",
+      "title": "Dark Patterns at Scale: Findings from a Crawl of 11K Shopping Websites",
+      "source_url": "https://doi.org/10.1145/3359183",
+      "source_name": "Proceedings of the ACM on Human-Computer Interaction (CSCW)",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "ed2ef9bf-d432-44a5-a802-5ce91a5c8251",
+      "slug": "dark-patterns-consumer-impact-survey-awareness-and-behavioural-effects",
+      "title": "Dark Patterns Consumer Impact Survey: Awareness and Behavioural Effects",
+      "source_url": "https://ilc-uk.org.uk/dark-patterns-survey-2023",
+      "source_name": "International Longevity Centre UK",
+      "status": "error",
+      "error": "fetch failed",
+      "replacement_url": ""
+    },
+    {
+      "id": "ae034090-b3d0-48a6-8996-6a7e07fac621",
+      "slug": "dashboard-design-patterns-cognitive-load-and-decision-making-efficiency",
+      "title": "Dashboard Design Patterns: Cognitive Load and Decision-Making Efficiency",
+      "source_url": "https://www.nngroup.com/articles/dashboard-design/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "45e0722c-5386-40de-9f75-79a772ce083e",
+      "slug": "decision-fatigue-in-digital-interfaces-choice-overload-and-default-effects",
+      "title": "Decision Fatigue in Digital Interfaces: Choice Overload and Default Effects",
+      "source_url": "https://dl.acm.org/doi/10.1145/3544548.3581234",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "656367ee-63ea-4ce4-b58b-d38ef0ac111e",
+      "slug": "design-principles-for-data-dense-enterprise-applications",
+      "title": "Design Principles for Data-Dense Enterprise Applications",
+      "source_url": "https://doi.org/10.1145/3290605.3300879",
+      "source_name": "ACM CHI 2019",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "ec0a8f09-a182-43d6-88c5-070108d6287c",
+      "slug": "digital-frustration-rage-clicks-dead-clicks-and-user-abandonment",
+      "title": "Digital Frustration: Rage Clicks, Dead Clicks, and User Abandonment",
+      "source_url": "https://contentsquare.com/insights/digital-frustration-report/",
+      "source_name": "Contentsquare",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "ebfee9f8-2474-4d2f-ac45-ecc9ee44961f",
+      "slug": "digital-literacy-across-generations-how-age-affects-web-navigation",
+      "title": "Digital Literacy Across Generations: How Age Affects Web Navigation",
+      "source_url": "https://doi.org/10.1016/j.chb.2023.107801",
+      "source_name": "Computers in Human Behavior",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "46a77543-7c40-43f3-9471-6f1da7bce0f7",
+      "slug": "does-gamification-work-a-literature-review-of-empirical-studies-on-gamification",
+      "title": "Does Gamification Work? A Literature Review of Empirical Studies on Gamification",
+      "source_url": "https://doi.org/10.1109/HICSS.2014.377",
+      "source_name": "Proceedings of the 47th Hawaii International Conference on System Sciences (HICSS)",
+      "status": "error",
+      "error": 20,
+      "replacement_url": ""
+    },
+    {
+      "id": "62fc02de-2d7a-44ad-812f-3a584737ee86",
+      "slug": "error-message-ux-how-to-write-helpful-actionable-error-messages",
+      "title": "Error Message UX: How to Write Helpful, Actionable Error Messages",
+      "source_url": "https://www.nngroup.com/articles/error-messages/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "3f304352-6608-49b1-ad0e-6e6a59b147a5",
+      "slug": "exciting-red-and-competent-blue-the-importance-of-color-in-marketing",
+      "title": "Exciting Red and Competent Blue: The Importance of Color in Marketing",
+      "source_url": "https://link.springer.com/article/10.1007/s11747-011-0264-5",
+      "source_name": "Journal of the Academy of Marketing Science",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "a785fdb8-af61-48c2-93cc-d77a558fff74",
+      "slug": "exit-intent-patterns-when-and-why-users-leave-without-converting",
+      "title": "Exit Intent Patterns: When and Why Users Leave Without Converting",
+      "source_url": "https://hotjar.com/blog/exit-intent/",
+      "source_name": "Hotjar",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "31263f5e-7743-4f7f-86d6-a6b065fefd3f",
+      "slug": "fitts-s-law-in-the-age-of-touch-target-size-and-touch-accuracy-on-mobile-devices",
+      "title": "Fitts's Law in the Age of Touch: Target Size and Touch Accuracy on Mobile Devices",
+      "source_url": "https://doi.org/10.1145/2556288.2557076",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "7192303c-ce2d-469a-b31d-c5b68bddd937",
+      "slug": "form-label-placement-top-aligned-vs-left-aligned-vs-floating-labels",
+      "title": "Form Label Placement: Top-Aligned vs Left-Aligned vs Floating Labels",
+      "source_url": "https://cxl.com/research/form-label-placement/",
+      "source_name": "CXL Institute",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "fb021ac5-81fa-412b-910a-19a4707db20f",
+      "slug": "gesture-interaction-design-understanding-multi-touch-and-beyond",
+      "title": "Gesture Interaction Design: Understanding Multi-Touch and Beyond",
+      "source_url": "https://doi.org/10.1145/2470654.2481359",
+      "source_name": "Proceedings of the SIGCHI Conference on Human Factors in Computing Systems (CHI '13)",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "7e801da0-c6d6-4841-8f60-26c2d7fe4481",
+      "slug": "google-mobile-ux-playbook-page-speed-tap-targets-and-mobile-first-patterns",
+      "title": "Google Mobile UX Playbook: Page Speed, Tap Targets, and Mobile-First Patterns",
+      "source_url": "https://web.dev/mobile-ux/",
+      "source_name": "Google Web Dev",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "f88f5495-cb2c-4f32-8610-0b92e6ded7f8",
+      "slug": "graphical-perception-theory-experimentation-and-application-to-the-development-of-graphical-methods",
+      "title": "Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods",
+      "source_url": "https://doi.org/10.1080/01621459.1984.10478080",
+      "source_name": "Journal of the American Statistical Association",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "96f4cc2a-91be-44e5-8dff-8fd6d398016a",
+      "slug": "gwi-digital-consumer-trends-2024-device-usage-app-behaviour-and-digital-habits",
+      "title": "GWI Digital Consumer Trends 2024: Device Usage, App Behaviour, and Digital Habits",
+      "source_url": "https://www.gwi.com/reports/digital-consumer-trends",
+      "source_name": "GWI (GlobalWebIndex)",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "b227433c-02e2-4a4c-924c-e8fff2d759c8",
+      "slug": "hotjar-2024-user-behaviour-trends-scroll-depth-and-engagement",
+      "title": "Hotjar 2024 User Behaviour Trends: Scroll Depth and Engagement",
+      "source_url": "https://www.hotjar.com/blog/scroll-depth/",
+      "source_name": "Hotjar",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "729f4431-eba4-419b-af59-9c44d6bb6877",
+      "slug": "hotjar-heatmap-analysis-where-users-click-scroll-and-hesitate",
+      "title": "Hotjar Heatmap Analysis: Where Users Click, Scroll, and Hesitate",
+      "source_url": "https://www.hotjar.com/heatmaps/research/",
+      "source_name": "Hotjar",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "311bf7c3-a511-4a26-800d-8a2e255ca1ae",
+      "slug": "how-users-read-and-misread-data-visualisations-an-eye-tracking-study",
+      "title": "How Users Read and Misread Data Visualisations: An Eye-Tracking Study",
+      "source_url": "https://doi.org/10.1109/TVCG.2020.2981432",
+      "source_name": "IEEE Transactions on Visualization and Computer Graphics",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "c5b7b595-134d-4c93-ad60-1470bfc81d75",
+      "slug": "information-architecture-and-findability-card-sorting-meets-analytics",
+      "title": "Information Architecture and Findability: Card Sorting Meets Analytics",
+      "source_url": "https://www.nngroup.com/articles/ia-findability/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "3e4fa063-dcf7-472b-8e84-511e1db44a94",
+      "slug": "making-content-usable-for-people-with-cognitive-and-learning-disabilities",
+      "title": "Making Content Usable for People with Cognitive and Learning Disabilities",
+      "source_url": "https://www.w3.org/TR/coga-usable/",
+      "source_name": "W3C / Web Accessibility Initiative",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "d012a383-ce84-4858-9c9e-2b59303c2ccd",
+      "slug": "microinteractions-and-user-engagement-a-mixed-methods-study",
+      "title": "Microinteractions and User Engagement: A Mixed Methods Study",
+      "source_url": "https://doi.org/10.1145/3313831.3376643",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "ed922663-5fec-4bfd-9cb1-8f125064a1d0",
+      "slug": "microsoft-clarity-insights-dead-click-and-scroll-abandonment-patterns",
+      "title": "Microsoft Clarity Insights: Dead Click and Scroll Abandonment Patterns",
+      "source_url": "https://clarity.microsoft.com/blog/dead-clicks-insights",
+      "source_name": "Microsoft Clarity",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "f4f0095d-cffa-4f3f-a885-c3df395e5b98",
+      "slug": "mobile-accessibility-how-wcag-applies-to-mobile-devices",
+      "title": "Mobile Accessibility: How WCAG Applies to Mobile Devices",
+      "source_url": "https://www.w3.org/TR/mobile-accessibility-mapping/",
+      "source_name": "W3C / Web Accessibility Initiative",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "30df1c78-b3e4-45ee-b543-382f71330755",
+      "slug": "mobile-app-onboarding-patterns-completion-rates-and-retention-impact",
+      "title": "Mobile App Onboarding: Patterns, Completion Rates, and Retention Impact",
+      "source_url": "https://www.appcues.com/blog/mobile-app-onboarding-benchmarks",
+      "source_name": "Appcues",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "5471c27a-b43c-4572-86bc-7de9a8247b76",
+      "slug": "mobile-e-commerce-usability-154-design-guidelines",
+      "title": "Mobile E-Commerce Usability: 154 Design Guidelines",
+      "source_url": "https://baymard.com/research/mobile-ecommerce",
+      "source_name": "Baymard Institute",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "df802333-6366-44f8-bfd0-d1a5abbc9937",
+      "slug": "mobile-vs-desktop-engagement-conversion-and-behaviour-differences",
+      "title": "Mobile vs Desktop: Engagement, Conversion, and Behaviour Differences",
+      "source_url": "https://contentsquare.com/insights/mobile-vs-desktop/",
+      "source_name": "Contentsquare",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "2dcaf9fc-e813-4e86-b3b2-64aec74892b6",
+      "slug": "my-phone-and-me-understanding-people-s-receptivity-to-mobile-notifications",
+      "title": "My Phone and Me: Understanding People's Receptivity to Mobile Notifications",
+      "source_url": "https://dl.acm.org/doi/10.1145/2858036.2858566",
+      "source_name": "ACM CHI Conference on Human Factors in Computing Systems",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "e04aad24-aa21-4fb5-a280-4126392dd962",
+      "slug": "notification-design-and-user-attention-when-push-becomes-shove",
+      "title": "Notification Design and User Attention: When Push Becomes Shove",
+      "source_url": "https://dl.acm.org/doi/10.1145/2858036.2858554",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "b1757cbb-bc52-429d-83b4-ae32bc27fa0c",
+      "slug": "notification-ux-frequency-relevance-and-permission-patterns",
+      "title": "Notification UX: Frequency, Relevance, and Permission Patterns",
+      "source_url": "https://www.nngroup.com/articles/push-notification-ux/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "c63b811b-adc2-4520-bbdf-9be4860e90d6",
+      "slug": "payment-ux-trust-signals-security-badges-and-perceived-safety",
+      "title": "Payment UX: Trust Signals, Security Badges, and Perceived Safety",
+      "source_url": "https://baymard.com/research/payment-and-trust",
+      "source_name": "Baymard Institute",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "4b50cb73-43f8-4a84-b0c5-1e7fc3fea72b",
+      "slug": "pricing-page-design-how-layout-affects-plan-selection",
+      "title": "Pricing Page Design: How Layout Affects Plan Selection",
+      "source_url": "https://www.nngroup.com/articles/pricing-pages/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "5b91ef2e-3d8a-49e6-ab8d-8440a1942562",
+      "slug": "product-listing-and-filtering-ux-how-users-navigate-large-catalogues",
+      "title": "Product Listing and Filtering UX: How Users Navigate Large Catalogues",
+      "source_url": "https://baymard.com/research/product-listings-and-filtering",
+      "source_name": "Baymard Institute",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "6b718564-5c6b-4962-b47f-9abb68681cac",
+      "slug": "saas-pricing-page-conversion-benchmarks-and-best-practices",
+      "title": "SaaS Pricing Page Conversion Benchmarks and Best Practices",
+      "source_url": "https://www.priceintelligently.com/blog/saas-pricing-page-best-practices",
+      "source_name": "Price Intelligently (Paddle)",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "e14bbc14-9832-4364-9cc7-8dd68eee1f44",
+      "slug": "saas-pricing-page-ux-layout-tiers-and-conversion-patterns",
+      "title": "SaaS Pricing Page UX: Layout, Tiers, and Conversion Patterns",
+      "source_url": "https://www.nngroup.com/articles/pricing-page-ux/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "0d4c20b5-7226-4bd5-bf39-2dc97c521652",
+      "slug": "scroll-depth-and-content-engagement-when-users-stop-reading",
+      "title": "Scroll Depth and Content Engagement: When Users Stop Reading",
+      "source_url": "https://www.nngroup.com/articles/scroll-depth-engagement/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "3c593d33-75e6-402b-b997-7b5e874f2cd9",
+      "slug": "size-and-typeface-effects-on-older-and-younger-adult-reading-performance",
+      "title": "Size and Typeface Effects on Older and Younger Adult Reading Performance",
+      "source_url": "https://agelab.mit.edu/typography-research",
+      "source_name": "MIT AgeLab",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "62cd0238-f9a9-49e0-8f2a-c974dbb5e80d",
+      "slug": "social-proof-in-digital-design-impact-on-trust-and-conversion",
+      "title": "Social Proof in Digital Design: Impact on Trust and Conversion",
+      "source_url": "https://cxl.com/research/social-proof/",
+      "source_name": "CXL Institute",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "4093fe99-4de6-4194-9fe6-dfcd7231329e",
+      "slug": "state-of-digital-content-creation-how-design-quality-affects-brand-perception",
+      "title": "State of Digital Content Creation: How Design Quality Affects Brand Perception",
+      "source_url": "https://www.adobe.com/express/learn/blog/creative-trends",
+      "source_name": "Adobe",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "204acb7b-d0ed-4f5c-874a-ccbe63eacda2",
+      "slug": "state-of-ux-research-industry-report-2024",
+      "title": "State of UX Research Industry Report 2024",
+      "source_url": "https://www.userinterviews.com/state-of-ux-research-2024",
+      "source_name": "User Interviews",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "314dbdac-f285-4786-8a71-356f1fd02bbe",
+      "slug": "system-usability-scale-sus-a-quick-and-dirty-usability-metric",
+      "title": "System Usability Scale (SUS): A Quick and Dirty Usability Metric",
+      "source_url": "https://doi.org/10.1201/9781498710411-35",
+      "source_name": "CRC Press / John Brooke",
+      "status": 503,
+      "replacement_url": ""
+    },
+    {
+      "id": "c8a24cfb-7eec-47f1-9741-b5137a6aeeb3",
+      "slug": "the-effect-of-animation-delays-on-perceived-performance-and-user-satisfaction",
+      "title": "The Effect of Animation Delays on Perceived Performance and User Satisfaction",
+      "source_url": "https://dl.acm.org/doi/10.1145/2858036.2858281",
+      "source_name": "ACM CHI Conference on Human Factors in Computing Systems",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "6af50f88-8a33-486f-916b-fcc09c995123",
+      "slug": "the-effect-of-text-difficulty-on-consumer-product-evaluations",
+      "title": "The Effect of Text Difficulty on Consumer Product Evaluations",
+      "source_url": "https://doi.org/10.1509/jmr.14.0057",
+      "source_name": "Journal of Marketing Research",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "88be2058-4f6a-4e9e-ad07-e2caf2755243",
+      "slug": "the-effect-of-ui-animation-on-perceived-wait-time-and-user-satisfaction",
+      "title": "The Effect of UI Animation on Perceived Wait Time and User Satisfaction",
+      "source_url": "https://doi.org/10.1145/3544548.3581027",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "56267270-1fea-4505-afdf-4add1e9ceeef",
+      "slug": "the-impact-of-product-reviews-on-purchase-decisions-stars-text-and-photos",
+      "title": "The Impact of Product Reviews on Purchase Decisions: Stars, Text, and Photos",
+      "source_url": "https://www.shopify.com/research/product-reviews",
+      "source_name": "Shopify UX Research",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "9ab8f87e-1de8-4609-9f00-12108e9f8fdb",
+      "slug": "the-influence-of-visual-complexity-on-first-impressions-of-websites",
+      "title": "The Influence of Visual Complexity on First Impressions of Websites",
+      "source_url": "https://doi.org/10.1080/01449290500330448",
+      "source_name": "Behaviour & Information Technology",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "a396543d-559a-47c1-98e0-27e52482be6b",
+      "slug": "the-personalisation-paradox-user-attitudes-toward-targeted-experiences",
+      "title": "The Personalisation Paradox: User Attitudes Toward Targeted Experiences",
+      "source_url": "https://doi.org/10.1016/j.chb.2022.107264",
+      "source_name": "Computers in Human Behavior",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "fef8ea8f-106c-4105-9100-920fd69aaf3b",
+      "slug": "the-role-of-prototype-fidelity-in-usability-testing-results",
+      "title": "The Role of Prototype Fidelity in Usability Testing Results",
+      "source_url": "https://doi.org/10.1145/3290605.3300513",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "3b84b5f3-3279-40fa-9e4e-0c02740637c6",
+      "slug": "the-state-of-ux-research-2024-methods-tools-and-team-structures",
+      "title": "The State of UX Research 2024: Methods, Tools, and Team Structures",
+      "source_url": "https://maze.co/resources/state-of-ux-research/",
+      "source_name": "Maze",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "1d9c2454-0b2b-4472-a215-7bb10ef9f842",
+      "slug": "thumb-zone-mapping-revisiting-mobile-touch-targets-for-modern-devices",
+      "title": "Thumb Zone Mapping: Revisiting Mobile Touch Targets for Modern Devices",
+      "source_url": "https://www.smashingmagazine.com/2022/12/thumb-zone-mobile-ux/",
+      "source_name": "Smashing Magazine",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "7ff98c8d-6335-4941-9ad8-235ca93f6989",
+      "slug": "top-navigation-vs-left-navigation-usability-findings",
+      "title": "Top Navigation vs Left Navigation: Usability Findings",
+      "source_url": "https://www.nngroup.com/articles/top-navigation-ia/",
+      "source_name": "NNGroup",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "bd44f992-2b47-4fc7-b744-fec835a521c1",
+      "slug": "touch-target-size-guidelines-minimum-sizes-for-mobile-interaction",
+      "title": "Touch Target Size Guidelines: Minimum Sizes for Mobile Interaction",
+      "source_url": "https://m3.material.io/foundations/accessible-design/accessibility-basics",
+      "source_name": "Google Material Design",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "4eaba691-bc2f-435b-b8e0-bb5e24744ac7",
+      "slug": "typography-and-reading-speed-on-screen-empirical-findings",
+      "title": "Typography and Reading Speed on Screen: Empirical Findings",
+      "source_url": "https://doi.org/10.1145/3313831.3376798",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "a5dfdd14-6bc0-4df3-a0bb-8d2520cb32e9",
+      "slug": "user-expectations-and-experience-with-conversational-ai-a-large-scale-survey",
+      "title": "User Expectations and Experience with Conversational AI: A Large-Scale Survey",
+      "source_url": "https://doi.org/10.1145/3544548.3581503",
+      "source_name": "ACM CHI 2023",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "f9e8c7d4-d8fa-4922-9426-54a9f0d7e879",
+      "slug": "user-onboarding-benchmarks-what-drives-activation-and-retention",
+      "title": "User Onboarding Benchmarks: What Drives Activation and Retention",
+      "source_url": "https://www.appcues.com/blog/user-onboarding-benchmarks",
+      "source_name": "Appcues",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "5f26bc64-fd96-4ef9-b16c-8b5874542eaa",
+      "slug": "voice-interface-ux-mental-models-error-handling-and-multi-modal-design",
+      "title": "Voice Interface UX: Mental Models, Error Handling, and Multi-Modal Design",
+      "source_url": "https://dl.acm.org/doi/10.1145/3544548.3581078",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "ebf5e24d-337a-4275-9124-d6d83f223812",
+      "slug": "voice-user-interface-design-usability-challenges-and-best-practices",
+      "title": "Voice User Interface Design: Usability Challenges and Best Practices",
+      "source_url": "https://doi.org/10.1145/3411764.3445340",
+      "source_name": "ACM CHI Conference",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "012ae187-5e4c-4c8d-93de-4d9770d87d98",
+      "slug": "wcag-2-2-new-success-criteria-and-their-impact-on-user-experience",
+      "title": "WCAG 2.2: New Success Criteria and Their Impact on User Experience",
+      "source_url": "https://www.w3.org/TR/WCAG22/",
+      "source_name": "W3C / Web Accessibility Initiative",
+      "status": 403,
+      "replacement_url": ""
+    },
+    {
+      "id": "828bb132-b3a9-418a-a5bb-d7a8371760f0",
+      "slug": "what-is-beautiful-is-usable-the-relationship-between-aesthetics-and-usability",
+      "title": "What is Beautiful is Usable: The Relationship Between Aesthetics and Usability",
+      "source_url": "https://doi.org/10.1016/S1071-5819(00)00009-3",
+      "source_name": "International Journal of Human-Computer Studies",
+      "status": 404,
+      "replacement_url": ""
+    },
+    {
+      "id": "93e26bff-2c67-4b3c-aee4-a5fa82e5a8bc",
+      "slug": "where-users-click-scroll-and-drop-off-heatmap-analysis-across-1m-sessions",
+      "title": "Where Users Click, Scroll, and Drop Off: Heatmap Analysis Across 1M+ Sessions",
+      "source_url": "https://hotjar.com/blog/heatmap-analysis/",
+      "source_name": "Hotjar",
+      "status": 404,
+      "replacement_url": ""
+    }
+  ],
+  "redirected": [
+    {
+      "id": "eda47419-0ea0-46ae-a5d7-68e779a7b347",
+      "slug": "2024-digital-experience-benchmark-report",
+      "title": "2024 Digital Experience Benchmark Report",
+      "old_url": "https://contentsquare.com/insights/digital-experience-benchmark/",
+      "new_url": "https://contentsquare.com/digital-experience-benchmark/"
+    },
+    {
+      "id": "6183fc0b-6ff3-4466-b74d-dbf43e878062",
+      "slug": "breadcrumb-navigation-usability-impact-and-best-practices",
+      "title": "Breadcrumb Navigation: Usability Impact and Best Practices",
+      "old_url": "https://baymard.com/blog/breadcrumb-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "940cdb84-e32f-4c7b-93a0-8160dd638f1c",
+      "slug": "choice-overload-and-the-paradox-of-choice-in-online-shopping",
+      "title": "Choice Overload and the Paradox of Choice in Online Shopping",
+      "old_url": "https://doi.org/10.1037/0022-3514.79.6.995",
+      "new_url": "https://psycnet.apa.org/doiLanding?doi=10.1037/0022-3514.79.6.995"
+    },
+    {
+      "id": "30311103-d262-425c-8aa7-d655fa2a50f4",
+      "slug": "cognitive-load-theory-educational-research-and-instructional-design",
+      "title": "Cognitive Load Theory, Educational Research, and Instructional Design",
+      "old_url": "https://link.springer.com/article/10.1007/s10648-019-09465-5",
+      "new_url": "https://link.springer.com/article/10.1007/s10648-019-09465-5?error=cookies_not_supported&code=f9222880-3b0b-4ba7-b25d-859978f0ae81"
+    },
+    {
+      "id": "291f57ba-b364-4758-a799-3bf9d5139793",
+      "slug": "consumer-trust-in-e-commerce-visual-design-cues-and-purchase-confidence",
+      "title": "Consumer Trust in E-Commerce: Visual Design Cues and Purchase Confidence",
+      "old_url": "https://baymard.com/blog/visual-trust-cues",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "fef97d86-bdaf-4e81-affe-47af646c0965",
+      "slug": "consumer-trust-in-online-shopping-a-multi-country-survey",
+      "title": "Consumer Trust in Online Shopping: A Multi-Country Survey",
+      "old_url": "https://doi.org/10.1016/j.jretconser.2021.102580",
+      "new_url": "https://linkinghub.elsevier.com/retrieve/pii/S0969698921001466"
+    },
+    {
+      "id": "840b8858-3788-4863-bbb3-7e56174d1adf",
+      "slug": "contentsquare-2024-digital-experience-benchmark-report",
+      "title": "Contentsquare 2024 Digital Experience Benchmark Report",
+      "old_url": "https://contentsquare.com/insights/digital-experience-benchmark/",
+      "new_url": "https://contentsquare.com/digital-experience-benchmark/"
+    },
+    {
+      "id": "e686f372-9840-4c42-9bca-882d4ad0bb2f",
+      "slug": "core-web-vitals-and-user-engagement-lcp-fid-cls-impact-on-bounce-rates",
+      "title": "Core Web Vitals and User Engagement: LCP, FID, CLS Impact on Bounce Rates",
+      "old_url": "https://web.dev/vitals-business-impact/",
+      "new_url": "https://web.dev/case-studies/vitals-business-impact"
+    },
+    {
+      "id": "954e4606-8a55-483f-8c13-3d10830c838a",
+      "slug": "digital-experience-benchmark-2024-global-cross-industry-analysis",
+      "title": "Digital Experience Benchmark 2024: Global Cross-Industry Analysis",
+      "old_url": "https://contentsquare.com/insights/digital-experience-benchmark/",
+      "new_url": "https://contentsquare.com/digital-experience-benchmark/"
+    },
+    {
+      "id": "d0d0562f-4546-4bc2-baa1-86167738723f",
+      "slug": "e-commerce-checkout-usability-18-common-pitfalls",
+      "title": "E-Commerce Checkout Usability: 18 Common Pitfalls",
+      "old_url": "https://baymard.com/blog/checkout-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "e6dc22de-02c6-46d9-8906-d32f33e79f86",
+      "slug": "e-commerce-search-ux-autocomplete-filters-and-zero-result-pages",
+      "title": "E-Commerce Search UX: Autocomplete, Filters, and Zero-Result Pages",
+      "old_url": "https://baymard.com/blog/ecommerce-search-ux",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "c4457c09-c7e5-4d29-a8f9-9071c93b6737",
+      "slug": "form-field-usability-label-placement-and-input-design",
+      "title": "Form Field Usability: Label Placement and Input Design",
+      "old_url": "https://baymard.com/blog/form-field-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "7e5776cd-9fb9-42f2-a4af-9885cf35159d",
+      "slug": "google-core-web-vitals-impact-on-user-experience-and-bounce-rate",
+      "title": "Google Core Web Vitals: Impact on User Experience and Bounce Rate",
+      "old_url": "https://web.dev/articles/vitals",
+      "new_url": "https://web.dev/articles/vitals?hl=pl"
+    },
+    {
+      "id": "7170c983-4603-488d-bea3-9c04f0f11f1a",
+      "slug": "homepage-usability-first-impressions-and-feature-discoverability",
+      "title": "Homepage Usability: First Impressions and Feature Discoverability",
+      "old_url": "https://baymard.com/blog/homepage-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "20dc3fef-2407-4d53-abdf-53b2171123ef",
+      "slug": "milliseconds-make-millions-how-page-speed-impacts-revenue",
+      "title": "Milliseconds Make Millions: How Page Speed Impacts Revenue",
+      "old_url": "https://www2.deloitte.com/ie/en/pages/consulting/articles/milliseconds-make-millions.html",
+      "new_url": "https://www.deloitte.com/ie/en/services/consulting/research/milliseconds-make-millions.html"
+    },
+    {
+      "id": "e1e919c5-d059-415c-9270-7a8e6cac35aa",
+      "slug": "mobile-e-commerce-usability-key-findings-from-large-scale-testing",
+      "title": "Mobile E-Commerce Usability: Key Findings from Large-Scale Testing",
+      "old_url": "https://baymard.com/blog/mobile-ecommerce-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "c234e01f-9e05-4bfe-bf0e-9b40419faf2d",
+      "slug": "mobile-form-usability-input-types-auto-fill-and-completion-rates",
+      "title": "Mobile Form Usability: Input Types, Auto-Fill, and Completion Rates",
+      "old_url": "https://baymard.com/blog/mobile-form-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "d84b1be2-1a5f-4817-b71e-3dfb848908c6",
+      "slug": "mobile-form-usability-input-types-autocomplete-and-error-recovery",
+      "title": "Mobile Form Usability: Input Types, Autocomplete, and Error Recovery",
+      "old_url": "https://baymard.com/blog/mobile-form-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "00bcf1aa-58b0-4b26-ac77-84e4f0d65e51",
+      "slug": "mobile-page-speed-how-delay-affects-bounce-rate-and-conversions",
+      "title": "Mobile Page Speed: How Delay Affects Bounce Rate and Conversions",
+      "old_url": "https://web.dev/performance-budgets-101/",
+      "new_url": "https://web.dev/articles/performance-budgets-101"
+    },
+    {
+      "id": "69a6e0cc-892b-43c8-87f3-1c40fa5c8911",
+      "slug": "password-and-authentication-ux-impact-on-abandonment",
+      "title": "Password and Authentication UX: Impact on Abandonment",
+      "old_url": "https://baymard.com/blog/password-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "b827bafc-2cfb-458a-b7c7-2a6a9f77d1b8",
+      "slug": "product-page-usability-how-users-evaluate-products-online",
+      "title": "Product Page Usability: How Users Evaluate Products Online",
+      "old_url": "https://baymard.com/blog/product-page-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "5454b6c1-40af-410c-9be1-f01d253d653b",
+      "slug": "product-page-ux-image-galleries-descriptions-and-decision-drivers",
+      "title": "Product Page UX: Image Galleries, Descriptions, and Decision Drivers",
+      "old_url": "https://baymard.com/blog/product-page-ux",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "0e8c77ff-bbf8-46d5-b349-b8e2915eb851",
+      "slug": "reducing-cognitive-load-in-web-forms-an-experimental-comparison",
+      "title": "Reducing Cognitive Load in Web Forms: An Experimental Comparison",
+      "old_url": "https://doi.org/10.1016/j.ijhcs.2018.07.004",
+      "new_url": "https://linkinghub.elsevier.com/retrieve/pii/S1071581918303756"
+    },
+    {
+      "id": "f2ebdf00-f3c8-4fc4-9c4e-c3009dbab4c8",
+      "slug": "shipping-and-returns-ux-how-policy-presentation-affects-purchase-decisions",
+      "title": "Shipping and Returns UX: How Policy Presentation Affects Purchase Decisions",
+      "old_url": "https://baymard.com/blog/shipping-returns-ux",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "f72b0aed-678b-4c0c-a915-7ea1f3c7ee95",
+      "slug": "single-page-vs-multi-step-checkout-a-comparative-study",
+      "title": "Single-Page vs Multi-Step Checkout: A Comparative Study",
+      "old_url": "https://baymard.com/blog/single-page-vs-multi-step-checkout",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "eab2e00f-6b47-4172-b086-5ae6d258b42c",
+      "slug": "site-search-usability-how-users-search-and-what-they-expect",
+      "title": "Site Search Usability: How Users Search and What They Expect",
+      "old_url": "https://baymard.com/blog/search-usability",
+      "new_url": "https://baymard.com/blog"
+    },
+    {
+      "id": "cf839c53-3e70-49d9-837b-af5ac7490b22",
+      "slug": "statista-digital-market-outlook-global-e-commerce-user-behaviour-2024",
+      "title": "Statista Digital Market Outlook: Global E-Commerce User Behaviour 2024",
+      "old_url": "https://www.statista.com/outlook/dmo/ecommerce/worldwide",
+      "new_url": "https://www.statista.com/outlook/emo/ecommerce/worldwide?currency=USD&__sso_cookie_checker=failed"
+    },
+    {
+      "id": "162243a5-5a05-4e2c-ad90-e75e75fd64fc",
+      "slug": "the-business-impact-of-core-web-vitals-conversion-engagement-and-revenue",
+      "title": "The Business Impact of Core Web Vitals: Conversion, Engagement, and Revenue",
+      "old_url": "https://web.dev/vitals-business-impact/",
+      "new_url": "https://web.dev/case-studies/vitals-business-impact?hl=ar"
+    },
+    {
+      "id": "4de4508f-de42-4918-9069-e2726b2ecd6c",
+      "slug": "the-effect-of-colour-on-user-interface-trust-and-emotional-response",
+      "title": "The Effect of Colour on User Interface Trust and Emotional Response",
+      "old_url": "https://doi.org/10.1016/j.ijhcs.2018.01.005",
+      "new_url": "https://linkinghub.elsevier.com/retrieve/pii/S1071581918300053"
+    },
+    {
+      "id": "526718ce-b981-4e91-9dde-8698ba08b849",
+      "slug": "the-impact-of-product-image-quality-on-e-commerce-conversion",
+      "title": "The Impact of Product Image Quality on E-Commerce Conversion",
+      "old_url": "https://doi.org/10.1016/j.jretconser.2019.101933",
+      "new_url": "https://linkinghub.elsevier.com/retrieve/pii/S0969698919301870"
+    },
+    {
+      "id": "053a377c-07a8-4e2a-9c36-cb5c5e766e0b",
+      "slug": "the-influence-of-hofstede-s-cultural-dimensions-on-web-user-interface-design",
+      "title": "The Influence of Hofstede's Cultural Dimensions on Web User Interface Design",
+      "old_url": "https://doi.org/10.1016/j.ijhcs.2013.09.006",
+      "new_url": "https://linkinghub.elsevier.com/retrieve/pii/S1071581913001304"
+    },
+    {
+      "id": "00e7726b-8a30-42bd-a36b-dba90bfcd08e",
+      "slug": "the-multi-device-world-cross-platform-consumer-behaviour-study",
+      "title": "The Multi-Device World: Cross-Platform Consumer Behaviour Study",
+      "old_url": "https://www.thinkwithgoogle.com/consumer-insights/consumer-trends/the-new-multi-screen-world-study/",
+      "new_url": "https://business.google.com/en-all/think/?ucbcb=1"
+    },
+    {
+      "id": "17eab5ab-4b97-4d51-80aa-9561fa06067e",
+      "slug": "ux-maturity-across-industries-how-organisations-measure-design-success",
+      "title": "UX Maturity Across Industries: How Organisations Measure Design Success",
+      "old_url": "https://www.userzoom.com/ux-research/ux-maturity-report/",
+      "new_url": "https://www.usertesting.com/platform/userzoom"
+    },
+    {
+      "id": "eda40f01-04d0-497f-b71b-2f43df8c20a8",
+      "slug": "voice-interaction-design-crafting-the-new-conversational-speech-systems",
+      "title": "Voice Interaction Design: Crafting the New Conversational Speech Systems",
+      "old_url": "https://doi.org/10.1016/j.ijhcs.2019.05.005",
+      "new_url": "https://linkinghub.elsevier.com/retrieve/pii/S1071581919300540"
+    },
+    {
+      "id": "a0e65315-72c4-48d7-ab6c-6b04dd4f6543",
+      "slug": "when-choice-is-demotivating-can-one-desire-too-much-of-a-good-thing",
+      "title": "When Choice is Demotivating: Can One Desire Too Much of a Good Thing?",
+      "old_url": "https://doi.org/10.1037/0022-3514.79.6.995",
+      "new_url": "https://psycnet.apa.org/doiLanding?doi=10.1037/0022-3514.79.6.995"
+    }
+  ]
+}
