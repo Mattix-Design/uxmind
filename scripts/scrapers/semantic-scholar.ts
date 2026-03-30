@@ -10,6 +10,7 @@ const API_BASE = "https://api.semanticscholar.org/graph/v1";
 
 // Tightly scoped UX/HCI search queries
 const SEARCH_QUERIES = [
+  // Original queries
   "usability testing user interface web",
   "eye tracking web page reading pattern",
   "cognitive load user interface design",
@@ -30,10 +31,41 @@ const SEARCH_QUERIES = [
   "banner blindness web advertising attention",
   "scrolling behavior web page engagement",
   "error message design user recovery",
+  // Expanded: data visualization & dashboards
+  "data visualization user comprehension dashboard",
+  "chart design readability user interpretation",
+  "dashboard layout information overload",
+  // Expanded: typography & readability
+  "typography readability screen digital",
+  "font size line height reading speed",
+  "text layout comprehension web design",
+  // Expanded: trust & credibility
+  "website credibility trust user perception",
+  "social proof persuasion user behavior online",
+  "privacy concern user experience trust",
+  // Expanded: loading & performance
+  "page load time user abandonment web",
+  "skeleton screen loading perceived performance",
+  "progressive disclosure complexity user interface",
+  // Expanded: notifications & engagement
+  "push notification engagement user fatigue",
+  "gamification user engagement motivation",
+  "feedback mechanism user interface satisfaction",
+  // Expanded: voice & conversational UI
+  "voice user interface speech interaction",
+  "chatbot usability conversational interface",
+  // Expanded: design systems & consistency
+  "design system consistency user interface",
+  "gesture interaction mobile usability",
+  "modal dialog interruption user flow",
+  // Expanded: emotion & aesthetics
+  "aesthetic usability effect interface design",
+  "emotional design user experience satisfaction",
+  "color psychology user interface mood",
 ];
 
 const RESULTS_PER_QUERY = 20;
-const FIELDS = "paperId,title,abstract,authors,year,citationCount,journal,externalIds,url,fieldsOfStudy";
+const FIELDS = "paperId,title,abstract,authors,year,citationCount,journal,externalIds,url,fieldsOfStudy,isOpenAccess,openAccessPdf";
 
 interface SemanticPaper {
   paperId: string;
@@ -46,6 +78,8 @@ interface SemanticPaper {
   externalIds: { DOI?: string } | null;
   url: string;
   fieldsOfStudy: string[] | null;
+  isOpenAccess: boolean;
+  openAccessPdf: { url: string } | null;
 }
 
 async function searchPapers(query: string): Promise<SemanticPaper[]> {
@@ -87,11 +121,12 @@ export async function ingestSemanticScholar(options: { dryRun?: boolean; limit?:
       let added = 0;
 
       for (const paper of papers) {
-        // Filter: must have abstract and be CS/Psychology
+        // Filter: must have abstract, be CS/Psychology, and be open access
         if (
           !paper.abstract ||
           paper.abstract.length < 100 ||
-          seenIds.has(paper.paperId)
+          seenIds.has(paper.paperId) ||
+          !paper.isOpenAccess
         ) {
           continue;
         }

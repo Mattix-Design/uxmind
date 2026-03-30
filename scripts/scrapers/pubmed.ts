@@ -10,6 +10,7 @@ import { scoreWithAI } from "../ai-scorer.js";
 // Tightly scoped queries — cognitive/behavioural science that applies to UX
 // Avoids clinical, pharmaceutical, and unrelated medical research
 const SEARCH_QUERIES = [
+  // Original queries
   '"cognitive load" AND ("user interface" OR "web" OR "digital")',
   '"visual attention" AND ("screen" OR "web page" OR "interface" OR "display")',
   '"decision making" AND ("online" OR "digital" OR "interface" OR "web")',
@@ -20,6 +21,24 @@ const SEARCH_QUERIES = [
   '"choice overload" AND ("online" OR "digital" OR "consumer")',
   '"banner blindness" OR "inattentional blindness" AND "web"',
   '"touch screen" AND ("usability" OR "interaction" OR "interface design")',
+  // Expanded: emotion & aesthetics
+  '"aesthetic preference" AND ("interface" OR "website" OR "design")',
+  '"emotional response" AND ("digital" OR "interface" OR "user experience")',
+  // Expanded: color & perception
+  '"color perception" AND ("interface" OR "display" OR "screen")',
+  '"contrast sensitivity" AND ("readability" OR "display" OR "accessibility")',
+  // Expanded: trust & persuasion
+  '"trust" AND ("website" OR "online" OR "digital") AND ("design" OR "interface")',
+  '"persuasion" AND ("digital" OR "web" OR "interface")',
+  // Expanded: attention & distraction
+  '"selective attention" AND ("screen" OR "digital" OR "notification")',
+  '"multitasking" AND ("screen" OR "digital" OR "cognitive")',
+  // Expanded: age & accessibility
+  '"older adults" AND ("technology" OR "interface" OR "usability")',
+  '"motor impairment" AND ("interface" OR "touch" OR "interaction")',
+  // Expanded: sleep, dark mode, screen time
+  '"dark mode" AND ("readability" OR "visual comfort" OR "screen")',
+  '"screen time" AND ("fatigue" OR "eye strain" OR "well-being")',
 ];
 
 const ESEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
@@ -35,12 +54,15 @@ interface PubMedArticle {
   publication_date: string | null;
   doi: string | null;
   url: string;
+  isOpenAccess: boolean;
 }
 
 async function searchPubMed(query: string): Promise<string[]> {
+  // Filter for PMC Open Access subset only
+  const oaQuery = `(${query}) AND "open access"[filter]`;
   const params = new URLSearchParams({
-    db: "pubmed",
-    term: query,
+    db: "pmc", // Use PMC (not PubMed) for open access full text
+    term: oaQuery,
     retmax: String(RESULTS_PER_QUERY),
     sort: "relevance",
     retmode: "json",
@@ -57,7 +79,7 @@ async function fetchPubMedDetails(pmids: string[]): Promise<PubMedArticle[]> {
   if (pmids.length === 0) return [];
 
   const params = new URLSearchParams({
-    db: "pubmed",
+    db: "pmc",
     id: pmids.join(","),
     retmode: "xml",
     rettype: "abstract",
@@ -111,10 +133,21 @@ async function fetchPubMedDetails(pmids: string[]): Promise<PubMedArticle[]> {
       }
     });
 
-    const url = `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`;
+    // Check for open access license in the XML
+    const licenseText = $article.find("license").text().toLowerCase() +
+      $article.find("LicenseInformation").text().toLowerCase();
+    const isOpenAccess = licenseText.includes("creative commons") ||
+      licenseText.includes("cc by") ||
+      licenseText.includes("cc0") ||
+      licenseText.includes("public domain") ||
+      licenseText.includes("open access");
+
+    const url = pmid.startsWith("PMC")
+      ? `https://pmc.ncbi.nlm.nih.gov/articles/${pmid}/`
+      : `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`;
 
     if (title && abstract.length > 50) {
-      articles.push({ pmid, title, authors, abstract, journal, publication_date, doi, url });
+      articles.push({ pmid, title, authors, abstract, journal, publication_date, doi, url, isOpenAccess });
     }
   });
 

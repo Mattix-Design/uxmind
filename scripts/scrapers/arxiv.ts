@@ -9,6 +9,7 @@ import { scoreWithAI } from "../ai-scorer.js";
 
 // Focused HCI/UX search queries
 const SEARCH_QUERIES = [
+  // Original queries
   'cat:cs.HC AND (usability OR "user experience" OR "user interface")',
   'cat:cs.HC AND ("interaction design" OR "web design" OR "mobile usability")',
   'cat:cs.HC AND ("cognitive load" OR "visual attention" OR "eye tracking")',
@@ -17,10 +18,37 @@ const SEARCH_QUERIES = [
   'cat:cs.HC AND ("form design" OR "checkout" OR "e-commerce")',
   'cat:cs.HC AND ("A/B test" OR "user testing" OR "usability study")',
   'cat:cs.HC AND ("heuristic evaluation" OR "user research" OR "task completion")',
+  // Expanded: data visualization
+  'cat:cs.HC AND ("data visualization" OR "dashboard" OR "chart design")',
+  'cat:cs.HC AND ("information visualization" OR "visual analytics")',
+  // Expanded: trust, privacy, dark patterns
+  'cat:cs.HC AND ("dark pattern" OR "deceptive design" OR "manipulative")',
+  'cat:cs.HC AND ("trust" OR "credibility" OR "privacy" AND "user")',
+  // Expanded: voice, chatbot, conversational
+  'cat:cs.HC AND ("voice interface" OR "conversational" OR "chatbot")',
+  'cat:cs.HC AND ("speech interaction" OR "virtual assistant")',
+  // Expanded: emotion, aesthetics
+  'cat:cs.HC AND ("emotional design" OR "aesthetic" OR "user satisfaction")',
+  // Expanded: gesture, touch, wearable
+  'cat:cs.HC AND ("gesture" OR "touch interaction" OR "wearable")',
+  // Expanded: loading, performance perception
+  'cat:cs.HC AND ("perceived performance" OR "loading" OR "wait time")',
+  // Expanded: design systems, prototyping
+  'cat:cs.HC AND ("design system" OR "prototyping" OR "design tool")',
 ];
 
 const ARXIV_API = "http://export.arxiv.org/api/query";
 const RESULTS_PER_QUERY = 30;
+
+// Only ingest papers with these open licenses (not the default non-exclusive license)
+const ALLOWED_LICENSES = [
+  "http://creativecommons.org/licenses/by/4.0/",
+  "http://creativecommons.org/licenses/by-sa/4.0/",
+  "http://creativecommons.org/licenses/by/4.0",
+  "http://creativecommons.org/licenses/by-sa/4.0",
+  "http://creativecommons.org/publicdomain/zero/1.0/",
+  "http://creativecommons.org/publicdomain/zero/1.0",
+];
 
 interface ArxivPaper {
   title: string;
@@ -30,6 +58,7 @@ interface ArxivPaper {
   arxivId: string;
   url: string;
   categories: string[];
+  license: string;
 }
 
 function parseArxivResponse(xml: string): ArxivPaper[] {
@@ -55,10 +84,14 @@ function parseArxivResponse(xml: string): ArxivPaper[] {
       if (term) categories.push(term);
     });
 
+    // Extract license from arxiv:license element
+    const license = $entry.find("arxiv\\:license").attr("href") ||
+      $entry.find("license").attr("href") || "";
+
     const url = `https://arxiv.org/abs/${arxivId}`;
 
     if (title && abstract) {
-      papers.push({ title, authors, abstract, published, arxivId, url, categories });
+      papers.push({ title, authors, abstract, published, arxivId, url, categories, license });
     }
   });
 
@@ -93,10 +126,15 @@ export async function ingestArxiv(options: { dryRun?: boolean; limit?: number } 
       const papers = parseArxivResponse(xml);
 
       for (const paper of papers) {
-        if (!seenIds.has(paper.arxivId)) {
-          seenIds.add(paper.arxivId);
-          allPapers.push(paper);
+        if (seenIds.has(paper.arxivId)) continue;
+
+        // Only ingest papers with permissive open licenses
+        if (!ALLOWED_LICENSES.some((l) => paper.license.includes(l))) {
+          continue;
         }
+
+        seenIds.add(paper.arxivId);
+        allPapers.push(paper);
       }
 
       console.log(`  [query] "${query.slice(0, 60)}..." → ${papers.length} papers`);
