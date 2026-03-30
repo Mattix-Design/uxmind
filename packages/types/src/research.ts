@@ -42,8 +42,10 @@ export interface ResearchEntry {
   research_type: ResearchType;
   site_contexts: SiteContext[];
   quality_score: number;
+  impact_score: number | null;
   scoring_track: ResearchType;
   scoring_breakdown: ScoringBreakdown;
+  impact_breakdown: ScoringBreakdown | null;
   key_findings: string[];
   methodology_summary: string | null;
   sample_size: string | null;

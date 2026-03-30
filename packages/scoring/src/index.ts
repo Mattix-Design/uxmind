@@ -1,2 +1,2 @@
-export { calculateScore } from "./calculator";
-export { getRubric } from "./rubrics";
+export { calculateScore, calculateImpactScore } from "./calculator";
+export { getRubric, getImpactRubric } from "./rubrics";

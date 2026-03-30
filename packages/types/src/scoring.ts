@@ -14,3 +14,4 @@ export interface ScoringRubric {
 }
 
 export const MINIMUM_QUALITY_SCORE = 65;
+export const MINIMUM_IMPACT_SCORE = 0;

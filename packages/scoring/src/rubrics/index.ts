@@ -4,6 +4,7 @@ import { analyticsBasedRubric } from "./analytics-based";
 import { surveyRubric } from "./survey";
 import { academicRubric } from "./academic";
 import { mixedMethodsRubric } from "./mixed-methods";
+import { impactRubric } from "./impact";
 
 const rubrics: Record<ResearchType, ScoringRubric> = {
   user_testing: userTestingRubric,
@@ -18,3 +19,9 @@ export function getRubric(track: ResearchType): ScoringRubric {
 }
 
 export { rubrics };
+
+export function getImpactRubric(): ScoringRubric {
+  return impactRubric;
+}
+
+export { impactRubric };
