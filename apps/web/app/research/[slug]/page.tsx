@@ -9,6 +9,8 @@ import {
   siteContextLabel,
 } from "@/lib/utils";
 import { CopyButton, ShareButton } from "@/components/copy-button";
+import { BackLink } from "@/components/back-link";
+import { SourceLink } from "@/components/source-link";
 
 export const revalidate = 3600;
 
@@ -30,6 +32,7 @@ interface ResearchEntry {
   tags: string[] | null;
   site_contexts: string[] | null;
   quality_score: number | null;
+  impact_score: number | null;
   status: string;
 }
 
@@ -89,7 +92,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
-      <nav className="mb-8 flex items-center gap-1.5 text-sm text-text-muted">
+      <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-1.5 text-sm text-text-muted">
         <Link href="/research" className="hover:text-coral-500 transition-colors">
           Research
         </Link>
@@ -115,33 +118,13 @@ export default async function ResearchDetailPage({ params }: PageProps) {
           )}
 
           {entry.source_url && (
-            <a
-              href={entry.source_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-medium text-coral-500 hover:text-coral-600 transition-colors"
-            >
-              View source
-              <svg
-                className="h-3.5 w-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-4.5-6H21m0 0v7.5m0-7.5l-9 9"
-                />
-              </svg>
-            </a>
+            <SourceLink url={entry.source_url} title={entry.title} />
           )}
         </div>
 
         {/* Research type pill + Evidence Score */}
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <span className="rounded-full bg-coral-500/10 px-3 py-1 text-xs font-medium text-coral-600">
+          <span className="rounded-full bg-coral-500/10 px-3 py-1 text-xs font-medium text-coral-700">
             {researchTypeLabel(entry.research_type)}
           </span>
           {entry.quality_score != null && (
@@ -153,15 +136,35 @@ export default async function ResearchDetailPage({ params }: PageProps) {
                   : entry.quality_score >= 70
                     ? "border-amber-200 bg-amber-50 text-amber-700"
                     : entry.quality_score >= 65
-                      ? "border-coral-500/20 bg-coral-500/10 text-coral-600"
+                      ? "border-coral-500/20 bg-coral-500/10 text-coral-700"
                       : "border-red-200 bg-red-50 text-red-700",
               )}
             >
               <span className={cn(
                 "h-2 w-2 rounded-full",
-                entry.quality_score >= 85 ? "bg-green-700" : entry.quality_score >= 70 ? "bg-amber-700" : entry.quality_score >= 65 ? "bg-coral-600" : "bg-red-700",
+                entry.quality_score >= 85 ? "bg-green-700" : entry.quality_score >= 70 ? "bg-amber-700" : entry.quality_score >= 65 ? "bg-coral-700" : "bg-red-700",
               )} />
               Evidence Score: {entry.quality_score}/100
+            </span>
+          )}
+          {entry.impact_score != null && (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold",
+                entry.impact_score >= 85
+                  ? "border-green-200 bg-green-50 text-green-700"
+                  : entry.impact_score >= 70
+                    ? "border-amber-200 bg-amber-50 text-amber-700"
+                    : entry.impact_score >= 65
+                      ? "border-coral-500/20 bg-coral-500/10 text-coral-700"
+                      : "border-red-200 bg-red-50 text-red-700",
+              )}
+            >
+              <span className={cn(
+                "h-2 w-2 rounded-full",
+                entry.impact_score >= 85 ? "bg-green-700" : entry.impact_score >= 70 ? "bg-amber-700" : entry.impact_score >= 65 ? "bg-coral-700" : "bg-red-700",
+              )} />
+              Impact Score: {entry.impact_score}/100
             </span>
           )}
         </div>
@@ -179,11 +182,16 @@ export default async function ResearchDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* Evidence Score legend */}
-      {entry.quality_score != null && (
-        <p className="mt-3 text-[11px] leading-relaxed text-text-muted">
-          Entries scoring 65+ out of 100 across methodology, rigour, recency, and source authority.
-        </p>
+      {/* Score legend */}
+      {(entry.quality_score != null || entry.impact_score != null) && (
+        <div className="mt-3 flex flex-col gap-0.5 text-[11px] leading-relaxed text-text-muted">
+          {entry.quality_score != null && (
+            <p><span className="font-medium text-text-secondary">Evidence Score:</span> How rigorous is the research methodology? Rated on methodology, sample size, recency, and source authority.</p>
+          )}
+          {entry.impact_score != null && (
+            <p><span className="font-medium text-text-secondary">Impact Score:</span> How actionable are the findings for design decisions? Rated on practical applicability, specificity, and design relevance.</p>
+          )}
+        </div>
       )}
 
       {/* Summary cards */}
@@ -337,25 +345,7 @@ export default async function ResearchDetailPage({ params }: PageProps) {
 
       {/* Back link */}
       <div className="mt-14 border-t border-surface-700 pt-8">
-        <Link
-          href="/research"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-coral-500 hover:text-coral-600 transition-colors"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-            />
-          </svg>
-          Back to Research
-        </Link>
+        <BackLink fallbackHref="/research" label="Back to Research" />
       </div>
     </div>
   );

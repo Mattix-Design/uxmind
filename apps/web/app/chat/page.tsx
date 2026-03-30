@@ -12,7 +12,9 @@ interface ConfidenceMeta {
   avgScore: number;
   label: string;
   sourceCount: number;
-  sources: { title: string; score: number; slug: string }[];
+  avgImpactScore?: number;
+  impactLabel?: string;
+  sources: { title: string; score: number; impact_score?: number; slug: string }[];
 }
 
 interface Message {
@@ -26,6 +28,8 @@ interface ParsedSection {
   body: string;
   score?: number;
   label?: string;
+  impactScore?: number;
+  impactLabel?: string;
   citation?: { title: string; url: string; authors: string };
 }
 
@@ -48,7 +52,7 @@ function renderMarkdown(raw: string): string {
     // Inline code
     .replace(
       /`([^`]+)`/g,
-      '<code class="rounded bg-surface-800 px-1.5 py-0.5 text-xs text-coral-600">$1</code>'
+      '<code class="rounded bg-surface-800 px-1.5 py-0.5 text-xs text-coral-700">$1</code>'
     );
 
   const lines = html.split("\n");
@@ -110,6 +114,7 @@ function renderMarkdown(raw: string): string {
 /* ------------------------------------------------------------------ */
 
 function parseCitation(body: string): { cleanBody: string; citation?: { title: string; url: string; authors: string } } {
+  // Match properly formatted citations: 📎 Source: [Title](url) — Authors
   const citationRegex = /\n?\s*📎\s*Source:\s*\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)\s*[—\-]\s*(.+)$/m;
   const match = body.match(citationRegex);
   if (match) {
@@ -122,7 +127,10 @@ function parseCitation(body: string): { cleanBody: string; citation?: { title: s
       },
     };
   }
-  return { cleanBody: body };
+  // Strip any malformed citation lines (📎 without proper [title](url) format) — these are hallucinated
+  const malformedCitation = /\n?\s*📎\s*Source:.*$/gm;
+  const cleaned = body.replace(malformedCitation, "").trim();
+  return { cleanBody: cleaned };
 }
 
 /* ------------------------------------------------------------------ */
@@ -162,13 +170,23 @@ function parseSections(content: string): { intro: string; sections: ParsedSectio
       const rawBody = (parts[i + 1] || "").trim();
       // Extract score from evidence line
       const evidenceMatch = rawBody.match(/🔬\s*Evidence:\s*(\d+)\/100\s*[—\-]\s*(Strong|Good|Moderate|Limited)/);
+      // Extract impact score from impact line
+      const impactMatch = rawBody.match(/💡\s*Impact:\s*(\d+)\/100\s*[—\-]\s*(Highly Actionable|Actionable|Moderate|Low Impact)/);
+      // Strip ALL evidence and impact lines from body (any format — scored, general knowledge, or non-standard)
+      const bodyWithoutEvidence = rawBody
+        .replace(/🔬\s*Evidence:.*$/gm, "")
+        .replace(/🧪\s*Evidence:.*$/gm, "")
+        .replace(/💡\s*Impact:.*$/gm, "")
+        .trim();
       // Extract citation
-      const { cleanBody, citation } = parseCitation(rawBody);
+      const { cleanBody, citation } = parseCitation(bodyWithoutEvidence);
       sections.push({
         heading: headingMatch[1],
         body: cleanBody,
         score: evidenceMatch ? parseInt(evidenceMatch[1], 10) : undefined,
         label: evidenceMatch ? evidenceMatch[2] : undefined,
+        impactScore: impactMatch ? parseInt(impactMatch[1], 10) : undefined,
+        impactLabel: impactMatch ? impactMatch[2] : undefined,
         citation,
       });
       i++; // skip the body part
@@ -189,7 +207,7 @@ function trafficColor(score: number | undefined): string {
   if (score == null) return "text-red-700";
   if (score >= 85) return "text-green-700";
   if (score >= 70) return "text-amber-700";
-  if (score >= 65) return "text-coral-600";
+  if (score >= 65) return "text-coral-700";
   return "text-red-700";
 }
 
@@ -201,12 +219,29 @@ function trafficBg(score: number | undefined): string {
   return "bg-red-50";
 }
 
+function impactColor(score: number | undefined): string {
+  if (score == null) return "text-gray-400";
+  if (score >= 85) return "text-green-700";
+  if (score >= 70) return "text-amber-700";
+  if (score >= 65) return "text-coral-700";
+  return "text-red-700";
+}
+
+function impactBg(score: number | undefined): string {
+  if (score == null) return "bg-gray-50";
+  if (score >= 85) return "bg-green-50";
+  if (score >= 70) return "bg-amber-50";
+  if (score >= 65) return "bg-coral-500/10";
+  return "bg-red-50";
+}
+
 function TrafficLight({ score }: { score?: number }) {
+  if (score == null) return null;
   const color = trafficColor(score);
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-medium ${color}`}>
       <span className="text-[10px]">{"\u25CF"}</span>
-      {score != null ? `${score}/100` : "N/A"}
+      {`${score}/100`}
     </span>
   );
 }
@@ -216,6 +251,11 @@ function TrafficLight({ score }: { score?: number }) {
 /* ------------------------------------------------------------------ */
 
 function CitationBlock({ citation, knownSlugs }: { citation: { title: string; url: string; authors: string }; knownSlugs?: Set<string> }) {
+  // Don't render citations without a valid, complete URL
+  // Reject empty URLs, non-http, and stub URLs that end with just a path segment (e.g. /paper/)
+  if (!citation.url || !citation.url.startsWith("http")) return null;
+  const urlPath = new URL(citation.url).pathname;
+  if (urlPath === "/" || urlPath.endsWith("/paper/") || urlPath.endsWith("/abs/")) return null;
   const slug = knownSlugs ? findSlugForUrl(citation.url, knownSlugs) : null;
 
   return (
@@ -262,6 +302,7 @@ function AccordionSection({
   heading,
   body,
   score,
+  impactScore,
   citation,
   isOpen,
   onToggle,
@@ -271,6 +312,7 @@ function AccordionSection({
   heading: string;
   body: string;
   score?: number;
+  impactScore?: number;
   citation?: { title: string; url: string; authors: string };
   isOpen: boolean;
   onToggle: () => void;
@@ -281,9 +323,16 @@ function AccordionSection({
     <div className="border-b border-card-border/50 last:border-b-0 uxm-section-fade" style={style}>
       <button
         onClick={onToggle}
-        className="flex w-full items-center gap-2 py-2.5 text-left cursor-pointer group"
+        aria-expanded={isOpen}
+        className="flex w-full items-center gap-2 py-2.5 text-left cursor-pointer group focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none rounded"
       >
         <TrafficLight score={score} />
+        {impactScore != null && (
+          <span className={`inline-flex items-center gap-1 text-xs font-medium ${impactColor(impactScore)}`}>
+            <span className="text-[10px]">{"\u25CF"}</span>
+            {`${impactScore}/100`}
+          </span>
+        )}
         <span className="flex-1 text-sm font-semibold text-text-primary group-hover:text-coral-500 transition-colors">
           {heading}
         </span>
@@ -321,7 +370,7 @@ function AccordionSection({
 
 const ANALYSIS_STEPS = [
   "Analysing research...",
-  "Searching 108 studies...",
+  "Searching evidence base...",
   "Found relevant sources...",
   "Cross-referencing findings...",
   "Generating insights...",
@@ -518,6 +567,7 @@ function AssistantMessage({
             heading={sec.heading}
             body={sec.body}
             score={sec.score}
+            impactScore={sec.impactScore}
             citation={sec.citation}
             isOpen={openSections.has(i)}
             onToggle={() => toggleSection(i)}
@@ -552,7 +602,7 @@ function FollowupChips({
         <button
           key={i}
           onClick={() => onSelect(q)}
-          className="rounded-full border border-card-border bg-card px-3 py-1.5 text-[11px] text-text-secondary hover:text-text-primary hover:shadow-sm transition-all duration-200 text-left cursor-pointer"
+          className="rounded-full border border-card-border bg-card px-3.5 py-2.5 min-h-[44px] text-[11px] text-text-secondary hover:text-text-primary hover:shadow-sm transition-all duration-200 text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none"
         >
           {q}
         </button>
@@ -596,33 +646,110 @@ function TypingIndicator() {
 
 function ConfidenceBadge({ meta }: { meta: ConfidenceMeta }) {
   const [expanded, setExpanded] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const color = trafficColor(meta.avgScore);
   const bg = trafficBg(meta.avgScore);
 
+  const scoreGuidance = meta.avgScore >= 85
+    ? "Strong evidence — high-quality research with rigorous methodology. Findings are reliable enough to inform design decisions with confidence."
+    : meta.avgScore >= 70
+      ? "Good evidence — solid research methodology. Findings are worth incorporating into your design process, but consider your specific context."
+      : "Moderate evidence — the research provides useful direction, but methodology has some limitations. Treat as informed guidance rather than definitive proof.";
+
+  const impactGuidance = meta.avgImpactScore != null
+    ? meta.avgImpactScore >= 85
+      ? "Highly actionable — clear, directly implementable design recommendations backed by strong effect sizes."
+      : meta.avgImpactScore >= 70
+        ? "Actionable — solid design recommendations with meaningful real-world validation."
+        : "Moderate impact — useful direction, but may need adaptation for your specific use case."
+    : null;
+
   return (
-    <div className="mt-2 ml-1">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className={`inline-flex items-center gap-1.5 rounded-lg ${bg} px-2.5 py-1 text-[11px] font-medium ${color} transition hover:opacity-80 cursor-pointer`}
-      >
-        <span className="text-[10px]">{"\u25CF"}</span>
-        {meta.label} ({meta.avgScore}/100) · {meta.sourceCount}{" "}
-        {meta.sourceCount === 1 ? "source" : "sources"}
-        <svg
-          className={`h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
+    <div className="ml-0">
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className={`inline-flex items-center gap-1.5 rounded-lg ${bg} px-2.5 py-1 text-[11px] font-medium ${color} transition hover:opacity-80 cursor-pointer`}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
+          <span className="text-[10px]">{"\u25CF"}</span>
+          Evidence: {meta.avgScore}/100
+          {meta.avgImpactScore != null && (
+            <span className={`${impactColor(meta.avgImpactScore)}`}>
+              · Impact: {meta.avgImpactScore}/100
+            </span>
+          )}
+          <span>· {meta.sourceCount}{" "}{meta.sourceCount === 1 ? "source" : "sources"}</span>
+          <svg
+            className={`h-3 w-3 transition-transform ${expanded ? "rotate-180" : ""}`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div className="relative">
+          <button
+            onClick={() => setShowInfo(!showInfo)}
+            onKeyDown={(e) => { if (e.key === "Escape") setShowInfo(false); }}
+            aria-expanded={showInfo}
+            aria-describedby={showInfo ? "score-info-tooltip" : undefined}
+            className="flex items-center justify-center min-h-[44px] min-w-[44px] text-text-muted hover:text-text-secondary transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none rounded"
+            aria-label="What does this score mean?"
+          >
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg>
+          </button>
+          {showInfo && (
+            <div id="score-info-tooltip" role="tooltip" className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-72 rounded-lg border border-card-border bg-card p-3 shadow-lg z-10">
+              <p className="text-[11px] font-medium text-text-primary mb-1.5">
+                What does this score mean?
+              </p>
+              <p className="text-[11px] text-text-secondary leading-relaxed mb-2">
+                The <span className="font-medium">evidence score</span> rates the quality of the underlying research — methodology, sample size, peer review, and replicability.
+              </p>
+              <p className="text-[11px] text-text-secondary leading-relaxed mb-2">
+                {scoreGuidance}
+              </p>
+              {meta.avgImpactScore != null && (
+                <>
+                  <p className="text-[11px] text-text-secondary leading-relaxed mb-2">
+                    The <span className="font-medium">impact score</span> rates how actionable the findings are — effect size, clarity of design recommendations, and real-world validation. Higher scores mean more directly implementable insights.
+                  </p>
+                  {impactGuidance && (
+                    <p className="text-[11px] text-text-secondary leading-relaxed mb-2">
+                      {impactGuidance}
+                    </p>
+                  )}
+                </>
+              )}
+              <div className="flex flex-col gap-1 text-[10px] text-text-muted border-t border-card-border/50 pt-2 mt-1">
+                <p className="font-medium text-text-secondary mb-0.5">Evidence</p>
+                <span><span className="font-medium text-green-700">85+</span> Strong — highly rigorous, act with confidence</span>
+                <span><span className="font-medium text-amber-700">70–84</span> Good — solid evidence, worth implementing</span>
+                <span><span className="font-medium text-coral-700">65–69</span> Moderate — useful guidance, verify for your context</span>
+              </div>
+              {meta.avgImpactScore != null && (
+                <div className="flex flex-col gap-1 text-[10px] text-text-muted pt-1.5 mt-1">
+                  <p className="font-medium text-text-secondary mb-0.5">Impact</p>
+                  <span><span className="font-medium text-green-700">85+</span> Highly Actionable — directly implementable</span>
+                  <span><span className="font-medium text-amber-700">70–84</span> Actionable — solid recommendations</span>
+                  <span><span className="font-medium text-coral-700">65–69</span> Moderate — useful, adapt for context</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
       {expanded && meta.sources.length > 0 && (
         <div className="mt-1.5 rounded-lg border border-card-border bg-card p-3 shadow-sm">
           <p className="text-[11px] text-text-muted mb-1.5">
-            Based on {meta.sourceCount} studies (avg score: {meta.avgScore}/100)
+            Based on {meta.sourceCount} {meta.sourceCount === 1 ? "study" : "studies"} (avg evidence: {meta.avgScore}/100{meta.avgImpactScore != null ? ` · avg impact: ${meta.avgImpactScore}/100` : ""})
           </p>
           <ul className="space-y-1">
             {meta.sources.map((s, i) => (
@@ -648,8 +775,13 @@ function ConfidenceBadge({ meta }: { meta: ConfidenceMeta }) {
                 ) : (
                   <span className="text-text-secondary truncate">{s.title}</span>
                 )}
-                <span className="ml-auto shrink-0 text-text-muted">
+                <span className="ml-auto shrink-0 text-text-muted whitespace-nowrap">
                   {s.score}/100
+                  {s.impact_score != null && (
+                    <span className={`ml-1.5 ${impactColor(s.impact_score)}`}>
+                      · {s.impact_score}/100
+                    </span>
+                  )}
                 </span>
               </li>
             ))}
@@ -669,12 +801,28 @@ function ChatInner() {
   const router = useRouter();
   const initialQuery = searchParams.get("q") || "";
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const saved = sessionStorage.getItem("uxmind-chat");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [showHistoryCta, setShowHistoryCta] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const hasSentInitial = useRef(false);
+
+  /* Persist messages to sessionStorage */
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("uxmind-chat", JSON.stringify(messages));
+    } catch { /* quota exceeded — ignore */ }
+  }, [messages]);
 
   // Collect known slugs from confidence metadata for citation linking
   const knownSlugs = new Set<string>();
@@ -851,8 +999,28 @@ function ChatInner() {
   // Check if the last message is the one currently streaming
   const lastMsgIdx = messages.length - 1;
 
+  const handleNewChat = () => {
+    setMessages([]);
+    sessionStorage.removeItem("uxmind-chat");
+    inputRef.current?.focus();
+  };
+
   return (
     <div className="flex flex-1 flex-col h-full min-h-0">
+      {/* New chat button */}
+      {hasMessages && !isStreaming && (
+        <div className="shrink-0 flex justify-end px-4 sm:px-6 pt-3">
+          <button
+            onClick={handleNewChat}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-card-border bg-card px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary hover:shadow-sm transition-all cursor-pointer"
+          >
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            New chat
+          </button>
+        </div>
+      )}
       {/* Scrollable message area */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-6">
         <div className="mx-auto w-full max-w-3xl py-8">
@@ -879,7 +1047,7 @@ function ChatInner() {
                     <button
                       key={q}
                       onClick={() => handleChipClick(q)}
-                      className="rounded-full border border-card-border bg-card px-3.5 py-2 text-xs text-text-secondary hover:text-text-primary hover:shadow-sm transition-all duration-200 text-left cursor-pointer"
+                      className="rounded-full border border-card-border bg-card px-3.5 py-2.5 min-h-[44px] text-xs text-text-secondary hover:text-text-primary hover:shadow-sm transition-all duration-200 text-left cursor-pointer focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none"
                     >
                       {q}
                     </button>
@@ -888,6 +1056,9 @@ function ChatInner() {
               </div>
             </div>
           )}
+
+          {/* Persistent heading for screen readers */}
+          {hasMessages && <h1 className="sr-only">UXMind Chat</h1>}
 
           {/* Messages */}
           {hasMessages && (
@@ -904,6 +1075,7 @@ function ChatInner() {
                     className={`flex ${
                       msg.role === "user" ? "justify-end" : "justify-start"
                     }`}
+                    aria-label={msg.role === "user" ? "Your message" : "UXMind response"}
                   >
                     {msg.role === "user" ? (
                       /* User bubble */
@@ -927,11 +1099,13 @@ function ChatInner() {
                           ) : (
                             <TypingIndicator />
                           )}
+                          {/* Confidence badge — inside the bubble */}
+                          {msg.meta && msg.content && !isMsgStreaming && (
+                            <div className="mt-3 pt-3 border-t border-card-border/50">
+                              <ConfidenceBadge meta={msg.meta} />
+                            </div>
+                          )}
                         </div>
-                        {/* Confidence badge */}
-                        {msg.meta && msg.content && !isMsgStreaming && (
-                          <ConfidenceBadge meta={msg.meta} />
-                        )}
                         {/* Follow-up chips */}
                         {followups.length > 0 && i === lastMsgIdx && (
                           <FollowupChips followups={followups} onSelect={handleChipClick} />
@@ -962,6 +1136,39 @@ function ChatInner() {
 
       {/* Sticky input bar */}
       <div className="shrink-0 border-t border-surface-700/50 bg-card/95 backdrop-blur-sm px-4 py-4">
+        {/* History CTA */}
+        {hasMessages && showHistoryCta && (
+          <div className="mx-auto max-w-3xl mb-3">
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-coral-200 bg-coral-50 px-4 py-2.5">
+              <div className="flex items-center gap-2 min-w-0">
+                <svg className="h-4 w-4 shrink-0 text-coral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-xs text-text-secondary truncate">
+                  <span className="font-medium text-text-primary">Save your chat history.</span>{" "}
+                  Sign up to keep conversations and pick up where you left off.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Link
+                  href="/signup"
+                  className="rounded-lg bg-coral-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-coral-600 transition-colors"
+                >
+                  Sign up free
+                </Link>
+                <button
+                  onClick={() => setShowHistoryCta(false)}
+                  className="text-text-muted hover:text-text-secondary transition-colors cursor-pointer"
+                  aria-label="Dismiss"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
           <div className="flex items-center gap-3 rounded-2xl border border-card-border bg-card px-4 py-3 shadow-sm focus-within:border-coral-500/50 focus-within:shadow-md transition-all">
             <input

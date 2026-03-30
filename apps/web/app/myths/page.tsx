@@ -91,7 +91,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
             href={buildHref({ view: "grid" })}
             aria-label="Grid view"
             className={cn(
-              "flex items-center px-2.5 py-2 rounded-l-lg transition",
+              "flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-3 rounded-l-lg transition focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none",
               activeView === "grid"
                 ? "bg-coral-500 text-white"
                 : "text-text-muted hover:text-text-secondary",
@@ -105,7 +105,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
             href={buildHref({ view: "" })}
             aria-label="List view"
             className={cn(
-              "flex items-center px-2.5 py-2 rounded-r-lg transition",
+              "flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-3 rounded-r-lg transition focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none",
               activeView === "list"
                 ? "bg-coral-500 text-white"
                 : "text-text-muted hover:text-text-secondary",
@@ -162,7 +162,7 @@ export default async function MythsPage({ searchParams }: PageProps) {
               </h2>
 
               <div className="mt-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-coral-600">
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-coral-700">
                   Reality
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-text-secondary">{myth.reality}</p>

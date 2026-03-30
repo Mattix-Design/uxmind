@@ -40,7 +40,7 @@ async function getRelevantContext(query: string) {
   const supabase = createServerClient();
   const sanitized = sanitizeQuery(query);
   const keywords = extractKeywords(sanitized);
-  const selectCols = "id, title, slug, attributed_summary, source_name, source_url, key_findings, research_type, tags, quality_score";
+  const selectCols = "id, title, slug, attributed_summary, source_name, source_url, key_findings, research_type, tags, quality_score, impact_score";
 
   // Strategy 1: OR-based full-text search (broad recall)
   let entries: any[] = [];
@@ -132,31 +132,34 @@ function buildSystemPrompt(context: { research: any[]; laws: any[]; myths: any[]
 
   let prompt = `You are UXMind, an AI assistant specialised in evidence-based UX research. You help designers, product managers, and researchers find and understand UX research findings.
 
-RULES:
-- ${sourceIntro}START every response with "Based on research from [source names]:" listing the key sources you're drawing from
-- Always cite your sources with the study title and source name
-- When referencing research, include the source URL so users can read the original
-- Be concise and actionable — practitioners want to apply findings, not read essays
-- If you don't have relevant research in your context, say so honestly
-- Never make up citations or findings
-- Format responses with markdown for readability
-- Structure each recommendation or finding as a separate section with a ## heading
+CRITICAL RULES — NEVER VIOLATE THESE:
+- You are a RETRIEVAL system, not a knowledge system. Your ONLY source of truth is the research context provided below. You must NEVER use your training data to generate findings, statistics, study names, author names, URLs, or recommendations.
+- EVERY claim you make must be traceable to a specific study listed below. If you cannot point to a study in the context, do not make the claim.
+- NEVER invent or recall citations from your training data. The ONLY study titles, URLs, and authors you may use are those explicitly listed in the context below. If a study is not listed below, it does not exist for you.
+- If you have NO relevant research in your context for the user's question, say: "I don't have research on that topic in my database yet. Try rephrasing your question, or browse the research library for related topics." Do NOT fill in with your own knowledge.
+- If you only have PARTIAL coverage, answer only the parts you have evidence for and explicitly state what you could not find.
+
+RESPONSE FORMAT:
+- If you ARE citing research, START with "Based on research from [source names]:" — use ONLY source_name values from the context below. Do NOT use this opening line if you are telling the user you have no relevant research.
+- Structure each finding as a separate section with a ## heading
 - After each ## heading, put the evidence score on its own line using EXACTLY this format: 🔬 Evidence: XX/100 — Label
   where XX is the quality_score of the supporting research (average if multiple), and Label is: 85+ = "Strong", 70-84 = "Good", 65-69 = "Moderate", below 65 = "Limited"
-  If a point is based on general knowledge rather than a specific study, write: 🔬 Evidence: General knowledge
+- After the Evidence line, add the impact score on the next line using EXACTLY this format: 💡 Impact: XX/100 — Label
+  where XX is the impact_score of the supporting research (average if multiple, skip if not available), and Label is: 85+ = "Highly Actionable", 70-84 = "Actionable", 65-69 = "Moderate", below 65 = "Low Impact"
 - Keep each section concise — 2-4 sentences max per section
-- Do NOT say "high confidence" or "low confidence" — always use the actual score and label (Strong/Good/Moderate/Limited)
-- At the END of each ## section body, include a citation line in EXACTLY this format (on its own line):
-  📎 Source: [Study Title](source_url) — Author Name(s), Year
-  Use the actual study title, URL, and authors from the research context provided. If a section draws from multiple studies, cite the primary one. If a section is general knowledge with no specific source, omit the citation line for that section.
-- At the very END of your entire response, output a special marker line: ---FOLLOWUPS--- followed by exactly 2-3 related follow-up questions the user might want to ask, one per line. These should be specific and related to the topic discussed. Do NOT include any other text after the follow-up questions.
+- At the END of each ## section, include a citation in EXACTLY this format (on its own line):
+  📎 Source: [EXACT Study Title from context](EXACT URL from context) — Author Name(s), Year
+  Copy the study title and URL EXACTLY as they appear in the context below. Do NOT paraphrase titles or construct URLs.
+- At the very END of your entire response, output a special marker line: ---FOLLOWUPS--- followed by exactly 2-3 related follow-up questions the user might want to ask, one per line. Do NOT include any other text after the follow-up questions.
 
 `;
 
   if (context.research.length > 0) {
     prompt += "RELEVANT RESEARCH FROM THE UXMIND DATABASE:\n\n";
     for (const entry of context.research) {
-      prompt += `**${entry.title}** (${entry.source_name}) — Evidence Score: ${entry.quality_score}/100\n`;
+      prompt += `**${entry.title}** (${entry.source_name}) — Evidence Score: ${entry.quality_score}/100`;
+      if (entry.impact_score != null) prompt += ` — Impact Score: ${entry.impact_score}/100`;
+      prompt += `\n`;
       prompt += `URL: ${entry.source_url}\n`;
       prompt += `Summary: ${entry.attributed_summary}\n`;
       if (entry.key_findings?.length > 0) {
@@ -177,14 +180,15 @@ RULES:
   }
 
   if (context.myths.length > 0) {
-    prompt += "RELEVANT DEBUNKED UX MYTHS:\n\n";
+    prompt += "RELEVANT DEBUNKED UX MYTHS (from the UXMind database — these do NOT have individual quality scores or URLs, so do NOT assign a score or citation link when referencing them. Simply state the myth and reality.):\n\n";
     for (const myth of context.myths) {
       prompt += `Myth: "${myth.myth}"\n`;
       prompt += `Reality: ${myth.reality}\n`;
-      if (myth.source_attribution) prompt += `Source: ${myth.source_attribution}\n`;
       prompt += "\n";
     }
   }
+
+  prompt += `\nREMINDER: You may ONLY cite studies listed above. The study titles and URLs above are your ONLY allowed citations. Do NOT cite any study not listed above, even if you know it exists. Do NOT invent URLs.\n`;
 
   return prompt;
 }
@@ -198,11 +202,21 @@ function computeConfidence(context: { research: any[]; laws: any[]; myths: any[]
 
   const label = avgScore >= 85 ? "Strong" : avgScore >= 70 ? "Good" : avgScore >= 65 ? "Moderate" : "Limited";
 
+  const impactScores = context.research
+    .map((e) => e.impact_score)
+    .filter((s: number | null) => s != null) as number[];
+  const avgImpactScore = impactScores.length > 0 ? Math.round(impactScores.reduce((a, b) => a + b, 0) / impactScores.length) : undefined;
+  const impactLabel = avgImpactScore != null
+    ? avgImpactScore >= 85 ? "Highly Actionable" : avgImpactScore >= 70 ? "Actionable" : avgImpactScore >= 65 ? "Moderate" : "Low Impact"
+    : undefined;
+
   return {
     avgScore,
     label,
     sourceCount,
-    sources: context.research.map((e) => ({ title: e.title, score: e.quality_score, slug: e.slug })),
+    avgImpactScore,
+    impactLabel,
+    sources: context.research.map((e) => ({ title: e.title, score: e.quality_score, impact_score: e.impact_score ?? null, slug: e.slug })),
   };
 }
 
@@ -232,10 +246,6 @@ export async function POST(request: NextRequest) {
   const encoder = new TextEncoder();
   const readable = new ReadableStream({
     async start(controller) {
-      // Send confidence metadata first
-      controller.enqueue(
-        encoder.encode(`data: ${JSON.stringify({ meta: confidence })}\n\n`)
-      );
       let attempts = 0;
       const maxAttempts = 3;
 
@@ -251,11 +261,69 @@ export async function POST(request: NextRequest) {
             })),
           });
 
+          let fullResponse = "";
           for await (const event of stream) {
             if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+              fullResponse += event.delta.text;
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
             }
           }
+
+          // Only send confidence metadata if the AI actually used the sources.
+          // If the response indicates no relevant research was found, omit sources.
+          // Only include sources the AI actually cited in its response.
+          // A source counts as cited if the AI used its title in a markdown link
+          // or referenced a substantial portion of the title verbatim.
+          const responseLower = fullResponse.toLowerCase();
+          const citedSources = confidence.sources.filter((s) => {
+            const titleLower = s.title.toLowerCase();
+            // Direct title match (full or near-full title appears in response)
+            if (responseLower.includes(titleLower)) return true;
+            // Markdown link match: [Title](url) — check if title appears in a link
+            const escapedTitle = titleLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            if (new RegExp(`\\[${escapedTitle}\\]`, "i").test(fullResponse)) return true;
+            // Check for a long consecutive substring match (at least 40 chars or 80% of title)
+            const minLen = Math.min(40, Math.ceil(titleLower.length * 0.8));
+            if (titleLower.length >= minLen) {
+              // Sliding window: check if any substring of minLen chars from the title appears
+              for (let i = 0; i <= titleLower.length - minLen; i++) {
+                if (responseLower.includes(titleLower.slice(i, i + minLen))) return true;
+              }
+            }
+            return false;
+          });
+
+          if (citedSources.length > 0) {
+            const citedScores = citedSources
+              .map((s) => s.score)
+              .filter((s: number | null) => s != null) as number[];
+            const citedAvg = citedScores.length > 0
+              ? Math.round(citedScores.reduce((a, b) => a + b, 0) / citedScores.length)
+              : 0;
+            const citedLabel = citedAvg >= 85 ? "Strong" : citedAvg >= 70 ? "Good" : citedAvg >= 65 ? "Moderate" : "Limited";
+            const citedImpactScores = citedSources
+              .map((s) => s.impact_score)
+              .filter((s: number | null) => s != null) as number[];
+            const citedAvgImpact = citedImpactScores.length > 0
+              ? Math.round(citedImpactScores.reduce((a, b) => a + b, 0) / citedImpactScores.length)
+              : undefined;
+            const citedImpactLabel = citedAvgImpact != null
+              ? citedAvgImpact >= 85 ? "Highly Actionable" : citedAvgImpact >= 70 ? "Actionable" : citedAvgImpact >= 65 ? "Moderate" : "Low Impact"
+              : undefined;
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify({
+                meta: {
+                  avgScore: citedAvg,
+                  label: citedLabel,
+                  sourceCount: citedSources.length,
+                  avgImpactScore: citedAvgImpact,
+                  impactLabel: citedImpactLabel,
+                  sources: citedSources,
+                },
+              })}\n\n`)
+            );
+          }
+
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
           controller.close();
           return;

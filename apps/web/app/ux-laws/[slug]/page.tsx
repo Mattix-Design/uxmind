@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createServerClient } from "@/lib/supabase/server";
+import { BackLink } from "@/components/back-link";
 
 export const revalidate = 3600;
 
@@ -45,7 +46,7 @@ export default async function UxLawDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-      <nav className="mb-8 flex items-center gap-1.5 text-sm text-text-muted">
+      <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-1.5 text-sm text-text-muted">
         <Link href="/ux-laws" className="transition-colors hover:text-coral-500">
           UX Laws
         </Link>
@@ -151,12 +152,7 @@ export default async function UxLawDetailPage({
       )}
 
       <div className="mt-14">
-        <Link
-          href="/ux-laws"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-coral-500 transition-colors hover:text-coral-600"
-        >
-          &larr; Back to UX Laws
-        </Link>
+        <BackLink fallbackHref="/ux-laws" label="Back to UX Laws" />
       </div>
     </div>
   );

@@ -22,8 +22,14 @@ const CATEGORIES = [
   { value: "learning", label: "Learning" },
 ] as const;
 
+const SORT_OPTIONS = [
+  { value: "default", label: "Default Order" },
+  { value: "name_asc", label: "Name A-Z" },
+  { value: "name_desc", label: "Name Z-A" },
+] as const;
+
 interface PageProps {
-  searchParams: Promise<{ q?: string; category?: string; view?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; view?: string; sort?: string }>;
 }
 
 function sanitizeQuery(q: string): string {
@@ -35,13 +41,22 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
   const query = sanitizeQuery(params.q?.trim() ?? "");
   const activeCategory = params.category || "";
   const activeView = params.view || "list";
+  const activeSort = params.sort || "default";
 
   const supabase = createServerClient();
 
   let request = supabase
     .from("ux_laws")
-    .select("name, slug, description, category", { count: "exact" })
-    .order("sort_order");
+    .select("name, slug, description, category", { count: "exact" });
+
+  // Apply sort
+  if (activeSort === "name_asc") {
+    request = request.order("name", { ascending: true });
+  } else if (activeSort === "name_desc") {
+    request = request.order("name", { ascending: false });
+  } else {
+    request = request.order("sort_order");
+  }
 
   if (query) {
     request = request.or(
@@ -63,6 +78,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
     if (query) merged.q = query;
     if (activeCategory) merged.category = activeCategory;
     if (activeView !== "list") merged.view = activeView;
+    if (activeSort !== "default") merged.sort = activeSort;
     Object.entries(overrides).forEach(([k, v]) => {
       if (v) merged[k] = v;
       else delete merged[k];
@@ -83,11 +99,12 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
       </div>
 
       {/* Filter bar */}
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        {/* Search */}
-        <form action="/ux-laws" method="GET" className="w-full sm:max-w-xs">
+      <div className="mt-8 flex flex-col gap-3">
+        {/* Row 1: Search (full width) */}
+        <form action="/ux-laws" method="GET">
           {activeCategory && <input type="hidden" name="category" value={activeCategory} />}
           {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
+          {activeSort !== "default" && <input type="hidden" name="sort" value={activeSort} />}
           <div className="relative">
             <input
               type="text"
@@ -109,27 +126,37 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
           </div>
         </form>
 
-        {/* Dropdowns + View Toggle */}
-        <form action="/ux-laws" method="GET" className="flex flex-wrap items-center gap-3">
-          {query && <input type="hidden" name="q" value={query} />}
-          {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
+        {/* Row 2: Filters left, view toggle right */}
+        <div className="flex items-center justify-between gap-3">
+          <form action="/ux-laws" method="GET" className="flex flex-wrap items-center gap-2">
+            {query && <input type="hidden" name="q" value={query} />}
+            {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
 
-          <FilterSelect
-            name="category"
-            value={activeCategory}
-            options={[
-              { value: "", label: "All Categories" },
-              ...CATEGORIES.map((c) => ({ value: c.value, label: c.label })),
-            ]}
-          />
+            <FilterSelect
+              name="category"
+              value={activeCategory}
+              ariaLabel="Filter by category"
+              options={[
+                { value: "", label: "All Categories" },
+                ...CATEGORIES.map((c) => ({ value: c.value, label: c.label })),
+              ]}
+            />
+
+            <FilterSelect
+              name="sort"
+              value={activeSort}
+              ariaLabel="Sort by"
+              options={SORT_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+            />
+          </form>
 
           {/* View toggle */}
-          <div className="flex items-center rounded-lg border border-card-border bg-card">
+          <div className="flex items-center rounded-lg border border-card-border bg-card shrink-0">
             <Link
               href={buildHref({ view: "grid" })}
               aria-label="Grid view"
               className={cn(
-                "flex items-center px-2.5 py-2 rounded-l-lg transition",
+                "flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-3 rounded-l-lg transition focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none",
                 activeView === "grid"
                   ? "bg-coral-500 text-white"
                   : "text-text-muted hover:text-text-secondary",
@@ -143,7 +170,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
               href={buildHref({ view: "" })}
               aria-label="List view"
               className={cn(
-                "flex items-center px-2.5 py-2 rounded-r-lg transition",
+                "flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-3 rounded-r-lg transition focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none",
                 activeView === "list"
                   ? "bg-coral-500 text-white"
                   : "text-text-muted hover:text-text-secondary",
@@ -155,7 +182,7 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
               </svg>
             </Link>
           </div>
-        </form>
+        </div>
       </div>
 
       {/* Results */}
@@ -171,12 +198,12 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
             <Link
               key={law.slug}
               href={`/ux-laws/${law.slug}`}
-              className="group flex items-start gap-4 rounded-xl border border-card-border/50 bg-card p-4 shadow-sm transition hover:shadow-md hover:bg-card-hover"
+              className="group flex items-start gap-4 rounded-xl border border-card-border/50 bg-card p-4 shadow-sm transition hover:shadow-md hover:bg-card-hover focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   {law.category && (
-                    <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-600 capitalize">
+                    <span className="rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-700 capitalize">
                       {law.category}
                     </span>
                   )}
@@ -198,10 +225,10 @@ export default async function UxLawsPage({ searchParams }: PageProps) {
             <Link
               key={law.slug}
               href={`/ux-laws/${law.slug}`}
-              className="group flex flex-col rounded-xl border border-card-border/50 bg-card p-5 shadow-sm transition hover:shadow-md hover:bg-card-hover"
+              className="group flex flex-col rounded-xl border border-card-border/50 bg-card p-5 shadow-sm transition hover:shadow-md hover:bg-card-hover focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               {law.category && (
-                <span className="mb-3 inline-flex w-fit rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-600 capitalize">
+                <span className="mb-3 inline-flex w-fit rounded-full bg-coral-500/10 px-2.5 py-0.5 text-[11px] font-medium text-coral-700 capitalize">
                   {law.category}
                 </span>
               )}

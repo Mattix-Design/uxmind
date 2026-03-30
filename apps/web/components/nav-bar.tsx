@@ -9,7 +9,6 @@ const NAV_LINKS = [
   { href: "/research", label: "Research" },
   { href: "/findings", label: "Findings" },
   { href: "/ux-laws", label: "Laws" },
-  { href: "/myths", label: "Myths" },
 ];
 
 export function NavBar() {
@@ -23,38 +22,57 @@ export function NavBar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-surface-700 bg-surface-900/85 backdrop-blur-lg">
-      <nav className="relative mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2.5 font-semibold text-text-primary">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M4 18L8 10L12 14L16 6L20 12"
-              stroke="#E8513D"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-lg tracking-tight">UXMind</span>
-        </Link>
+      <nav aria-label="Main navigation" className="relative mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+        {/* Left: Logo + nav links */}
+        <div className="flex items-center gap-1">
+          <Link href="/" className="flex items-center gap-2.5 font-semibold text-text-primary mr-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 18L8 10L12 14L16 6L20 12"
+                stroke="#E8513D"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="text-lg tracking-tight">UXMind</span>
+          </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden sm:flex items-center gap-1">
-          {NAV_LINKS.map((link) => {
-            const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "text-coral-600"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+          {/* Desktop nav links */}
+          <div className="hidden sm:flex items-center gap-1">
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "text-coral-600"
+                      : "text-text-secondary hover:text-text-primary"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right: Auth buttons (desktop) */}
+        <div className="hidden sm:flex items-center gap-2">
+          <Link
+            href="/login"
+            className="rounded-lg border border-card-border bg-card px-4 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:shadow-sm transition-all focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none"
+          >
+            Log in
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-lg bg-coral-500 px-4 py-1.5 text-sm font-medium text-white hover:bg-coral-600 transition-colors focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          >
+            Register
+          </Link>
         </div>
 
         {/* Mobile hamburger button */}
@@ -98,6 +116,20 @@ export function NavBar() {
                   </Link>
                 );
               })}
+              <div className="mt-2 border-t border-surface-700 pt-3 flex flex-col gap-2 px-3 pb-2">
+                <Link
+                  href="/login"
+                  className="rounded-lg border border-card-border bg-card px-4 py-2 text-sm font-medium text-text-secondary text-center hover:text-text-primary transition-all"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/register"
+                  className="rounded-lg bg-coral-500 px-4 py-2 text-sm font-medium text-white text-center hover:bg-coral-600 transition-colors"
+                >
+                  Register
+                </Link>
+              </div>
             </div>
           </div>
         )}

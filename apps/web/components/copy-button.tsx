@@ -16,23 +16,26 @@ export function CopyButton({ text, className }: { text: string; className?: stri
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className={className ?? "shrink-0 rounded-md p-1 text-text-muted hover:text-text-secondary hover:bg-surface-700 transition cursor-pointer"}
-      title={copied ? "Copied!" : "Copy to clipboard"}
-    >
-      {copied ? (
-        <svg className="h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 6 9 17l-5-5" />
-        </svg>
-      ) : (
-        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-        </svg>
-      )}
-    </button>
+    <span className="relative inline-flex">
+      <button
+        type="button"
+        onClick={handleCopy}
+        className={className ?? "shrink-0 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-md p-2 text-text-muted hover:text-text-secondary hover:bg-surface-700 transition cursor-pointer focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none"}
+        aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
+      >
+        {copied ? (
+          <svg className="h-4 w-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+        ) : (
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+        )}
+      </button>
+      <span aria-live="polite" className="sr-only">{copied ? "Copied to clipboard" : ""}</span>
+    </span>
   );
 }
 

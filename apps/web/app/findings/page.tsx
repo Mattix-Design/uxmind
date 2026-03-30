@@ -26,13 +26,22 @@ interface Finding {
   researchTitle: string;
   researchSlug: string;
   qualityScore: number | null;
+  impactScore: number | null;
   sourceName: string | null;
   tags: string[] | null;
   researchType: string;
+  authors: string[] | null;
+  publicationDate: string | null;
 }
 
+const SORT_OPTIONS = [
+  { value: "default", label: "Default" },
+  { value: "impact_desc", label: "Highest Impact" },
+  { value: "evidence_desc", label: "Highest Evidence" },
+] as const;
+
 interface PageProps {
-  searchParams: Promise<{ q?: string; type?: string; view?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; view?: string; sort?: string; source?: string; year?: string }>;
 }
 
 export default async function FindingsPage({ searchParams }: PageProps) {
@@ -40,13 +49,16 @@ export default async function FindingsPage({ searchParams }: PageProps) {
   const query = params.q || "";
   const activeType = params.type || "";
   const activeView = params.view || "list";
+  const activeSort = params.sort || "impact_desc";
+  const activeSource = params.source || "";
+  const activeYear = params.year || "";
 
   const supabase = createServerClient();
 
   const { data: entries, error } = await supabase
     .from("research_entries")
     .select(
-      "title, slug, key_findings, quality_score, source_name, tags, research_type"
+      "title, slug, key_findings, quality_score, impact_score, source_name, tags, research_type, authors, publication_date"
     )
     .eq("status", "published");
 
@@ -54,17 +66,40 @@ export default async function FindingsPage({ searchParams }: PageProps) {
     console.error("Failed to fetch research entries:", error);
   }
 
+  // Build source and year options from all entries before filtering
+  const allEntries = entries || [];
+  const sourceSet = new Set<string>();
+  const yearSet = new Set<string>();
+  for (const e of allEntries) {
+    if (e.source_name) sourceSet.add(e.source_name);
+    if (e.publication_date) {
+      const y = String(e.publication_date).slice(0, 4);
+      if (y.length === 4) yearSet.add(y);
+    }
+  }
+  const sourceOptions = [
+    { value: "", label: "All Sources" },
+    ...Array.from(sourceSet).sort().map((s) => ({ value: s, label: s })),
+  ];
+  const yearOptions = [
+    { value: "", label: "All Years" },
+    ...Array.from(yearSet).sort().reverse().map((y) => ({ value: y, label: y })),
+  ];
+
   // Flatten entries into individual findings
-  let findings: Finding[] = (entries || []).flatMap(
+  let findings: Finding[] = allEntries.flatMap(
     (e: any) =>
       e.key_findings?.map((f: string) => ({
         text: f,
         researchTitle: e.title,
         researchSlug: e.slug,
         qualityScore: e.quality_score,
+        impactScore: e.impact_score,
         sourceName: e.source_name,
         tags: e.tags,
         researchType: e.research_type,
+        authors: e.authors,
+        publicationDate: e.publication_date,
       })) ?? []
   );
 
@@ -79,11 +114,31 @@ export default async function FindingsPage({ searchParams }: PageProps) {
     findings = findings.filter((f) => f.researchType === activeType);
   }
 
+  // Filter by source
+  if (activeSource) {
+    findings = findings.filter((f) => f.sourceName === activeSource);
+  }
+
+  // Filter by year
+  if (activeYear) {
+    findings = findings.filter((f) => f.publicationDate && String(f.publicationDate).startsWith(activeYear));
+  }
+
+  // Sort findings
+  if (activeSort === "impact_desc") {
+    findings.sort((a, b) => (b.impactScore ?? -1) - (a.impactScore ?? -1));
+  } else if (activeSort === "evidence_desc") {
+    findings.sort((a, b) => (b.qualityScore ?? -1) - (a.qualityScore ?? -1));
+  }
+
   function buildHref(overrides: Record<string, string>) {
     const merged: Record<string, string> = {};
     if (activeType) merged.type = activeType;
     if (query) merged.q = query;
     if (activeView !== "list") merged.view = activeView;
+    if (activeSort !== "impact_desc") merged.sort = activeSort;
+    if (activeSource) merged.source = activeSource;
+    if (activeYear) merged.year = activeYear;
     Object.entries(overrides).forEach(([k, v]) => {
       if (v) merged[k] = v;
       else delete merged[k];
@@ -93,7 +148,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-text-primary">
@@ -106,13 +161,15 @@ export default async function FindingsPage({ searchParams }: PageProps) {
       </div>
 
       {/* Filter bar */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Search + Type dropdown */}
-        <form action="/findings" method="GET" className="flex items-center gap-3">
-          {activeView !== "list" && (
-            <input type="hidden" name="view" value={activeView} />
-          )}
-          <div className="relative w-full sm:w-64">
+      <div className="mb-8 flex flex-col gap-3">
+        {/* Row 1: Search (full width) */}
+        <form action="/findings" method="GET">
+          {activeType && <input type="hidden" name="type" value={activeType} />}
+          {activeSource && <input type="hidden" name="source" value={activeSource} />}
+          {activeYear && <input type="hidden" name="year" value={activeYear} />}
+          {activeSort !== "impact_desc" && <input type="hidden" name="sort" value={activeSort} />}
+          {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
+          <div className="relative">
             <input
               type="text"
               name="q"
@@ -126,60 +183,80 @@ export default async function FindingsPage({ searchParams }: PageProps) {
               className="absolute inset-y-0 right-0 flex items-center px-3 text-text-muted hover:text-text-secondary"
               aria-label="Search"
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.65 4.65a7.5 7.5 0 0012 12z"
-                />
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.65 4.65a7.5 7.5 0 0012 12z" />
               </svg>
             </button>
           </div>
-          <FilterSelect
-            name="type"
-            value={activeType}
-            options={RESEARCH_TYPES.map((t) => ({ value: t.value, label: t.label }))}
-          />
         </form>
 
-        {/* View toggle */}
-        <div className="flex items-center rounded-lg border border-card-border bg-card">
-          <Link
-            href={buildHref({ view: "grid" })}
-            className={cn(
-              "flex items-center px-2.5 py-2 rounded-l-lg transition",
-              activeView === "grid"
-                ? "bg-coral-500 text-white"
-                : "text-text-muted hover:text-text-secondary"
-            )}
-            aria-label="Grid view"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
-            </svg>
-          </Link>
-          <Link
-            href={buildHref({ view: "" })}
-            className={cn(
-              "flex items-center px-2.5 py-2 rounded-r-lg transition",
-              activeView === "list"
-                ? "bg-coral-500 text-white"
-                : "text-text-muted hover:text-text-secondary"
-            )}
-            aria-label="List view"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
-              <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
-            </svg>
-          </Link>
+        {/* Row 2: Filters left, view toggle right */}
+        <div className="flex items-center justify-between gap-3">
+          <form action="/findings" method="GET" className="flex flex-wrap items-center gap-2">
+            {query && <input type="hidden" name="q" value={query} />}
+            {activeView !== "list" && <input type="hidden" name="view" value={activeView} />}
+
+            <FilterSelect
+              name="type"
+              value={activeType}
+              ariaLabel="Filter by research type"
+              options={RESEARCH_TYPES.map((t) => ({ value: t.value, label: t.label }))}
+            />
+
+            <FilterSelect
+              name="source"
+              value={activeSource}
+              ariaLabel="Filter by source"
+              options={sourceOptions}
+            />
+
+            <FilterSelect
+              name="year"
+              value={activeYear}
+              ariaLabel="Filter by year"
+              options={yearOptions}
+            />
+
+            <FilterSelect
+              name="sort"
+              value={activeSort}
+              ariaLabel="Sort by"
+              options={SORT_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+            />
+          </form>
+
+          {/* View toggle */}
+          <div className="flex items-center rounded-lg border border-card-border bg-card shrink-0">
+            <Link
+              href={buildHref({ view: "grid" })}
+              className={cn(
+                "flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-3 rounded-l-lg transition focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none",
+                activeView === "grid"
+                  ? "bg-coral-500 text-white"
+                  : "text-text-muted hover:text-text-secondary"
+              )}
+              aria-label="Grid view"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+              </svg>
+            </Link>
+            <Link
+              href={buildHref({ view: "" })}
+              className={cn(
+                "flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-3 rounded-r-lg transition focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:outline-none",
+                activeView === "list"
+                  ? "bg-coral-500 text-white"
+                  : "text-text-muted hover:text-text-secondary"
+              )}
+              aria-label="List view"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -191,7 +268,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
           </p>
           <Link
             href="/findings"
-            className="mt-3 text-sm font-medium text-coral-500 hover:text-coral-600"
+            className="mt-3 text-sm font-medium text-coral-500 hover:text-coral-700"
           >
             Clear filters
           </Link>
@@ -203,7 +280,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
               key={`${finding.researchSlug}-${i}`}
               className="group relative flex items-start gap-4 rounded-xl border border-card-border/50 bg-card p-4 shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
-              <Link href={`/research/${finding.researchSlug}`} className="absolute inset-0 z-0 rounded-xl" aria-label={finding.researchTitle}>
+              <Link href={`/research/${finding.researchSlug}`} className="absolute inset-0 z-0 rounded-xl focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none" aria-label={finding.researchTitle}>
                 <span className="sr-only">{finding.researchTitle}</span>
               </Link>
               <div className="flex-1 min-w-0">
@@ -221,27 +298,46 @@ export default async function FindingsPage({ searchParams }: PageProps) {
                     </>
                   )}
                   {finding.qualityScore != null && (
-                    <>
-                      <span>&middot;</span>
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1 font-semibold",
-                          finding.qualityScore >= 85
-                            ? "text-green-700"
-                            : finding.qualityScore >= 70
-                              ? "text-amber-700"
-                              : finding.qualityScore >= 65
-                                ? "text-coral-600"
-                                : "text-red-700",
-                        )}
-                      >
-                        <span className={cn(
-                          "h-1.5 w-1.5 rounded-full",
-                          finding.qualityScore >= 85 ? "bg-green-700" : finding.qualityScore >= 70 ? "bg-amber-700" : finding.qualityScore >= 65 ? "bg-coral-600" : "bg-red-700",
-                        )} />
-                        {finding.qualityScore}/100
-                      </span>
-                    </>
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                        finding.qualityScore >= 85
+                          ? "border-green-200 bg-green-50 text-green-700"
+                          : finding.qualityScore >= 70
+                            ? "border-amber-200 bg-amber-50 text-amber-700"
+                            : finding.qualityScore >= 65
+                              ? "border-coral-500/20 bg-coral-500/10 text-coral-700"
+                              : "border-red-200 bg-red-50 text-red-700",
+                      )}
+                      title="Evidence Score"
+                    >
+                      <span className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        finding.qualityScore >= 85 ? "bg-green-700" : finding.qualityScore >= 70 ? "bg-amber-700" : finding.qualityScore >= 65 ? "bg-coral-700" : "bg-red-700",
+                      )} />
+                      <span className="text-[9px] font-medium text-[10px]">Evidence</span> {finding.qualityScore}
+                    </span>
+                  )}
+                  {finding.impactScore != null && (
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                        finding.impactScore >= 85
+                          ? "border-green-200 bg-green-50 text-green-700"
+                          : finding.impactScore >= 70
+                            ? "border-amber-200 bg-amber-50 text-amber-700"
+                            : finding.impactScore >= 65
+                              ? "border-coral-500/20 bg-coral-500/10 text-coral-700"
+                              : "border-red-200 bg-red-50 text-red-700",
+                      )}
+                      title="Impact Score"
+                    >
+                      <span className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        finding.impactScore >= 85 ? "bg-green-700" : finding.impactScore >= 70 ? "bg-amber-700" : finding.impactScore >= 65 ? "bg-coral-700" : "bg-red-700",
+                      )} />
+                      <span className="text-[9px] font-medium text-[10px]">Impact</span> {finding.impactScore}
+                    </span>
                   )}
                 </div>
               </div>
@@ -258,7 +354,7 @@ export default async function FindingsPage({ searchParams }: PageProps) {
               key={`${finding.researchSlug}-${i}`}
               className="group relative flex flex-col rounded-xl border border-card-border/50 bg-card p-5 shadow-sm transition hover:shadow-md hover:bg-card-hover"
             >
-              <Link href={`/research/${finding.researchSlug}`} className="absolute inset-0 z-0 rounded-xl" aria-label={finding.researchTitle}>
+              <Link href={`/research/${finding.researchSlug}`} className="absolute inset-0 z-0 rounded-xl focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none" aria-label={finding.researchTitle}>
                 <span className="sr-only">{finding.researchTitle}</span>
               </Link>
               {/* Finding text + copy */}
@@ -297,15 +393,37 @@ export default async function FindingsPage({ searchParams }: PageProps) {
                           : finding.qualityScore >= 70
                             ? "border-amber-200 bg-amber-50 text-amber-700"
                             : finding.qualityScore >= 65
-                              ? "border-coral-500/20 bg-coral-500/10 text-coral-600"
+                              ? "border-coral-500/20 bg-coral-500/10 text-coral-700"
                               : "border-red-200 bg-red-50 text-red-700",
                       )}
+                      title="Evidence Score"
                     >
                       <span className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        finding.qualityScore >= 85 ? "bg-green-700" : finding.qualityScore >= 70 ? "bg-amber-700" : finding.qualityScore >= 65 ? "bg-coral-600" : "bg-red-700",
+                        finding.qualityScore >= 85 ? "bg-green-700" : finding.qualityScore >= 70 ? "bg-amber-700" : finding.qualityScore >= 65 ? "bg-coral-700" : "bg-red-700",
                       )} />
                       {finding.qualityScore}
+                    </span>
+                  )}
+                  {finding.impactScore != null && (
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                        finding.impactScore >= 85
+                          ? "border-green-200 bg-green-50 text-green-700"
+                          : finding.impactScore >= 70
+                            ? "border-amber-200 bg-amber-50 text-amber-700"
+                            : finding.impactScore >= 65
+                              ? "border-coral-500/20 bg-coral-500/10 text-coral-700"
+                              : "border-red-200 bg-red-50 text-red-700",
+                      )}
+                      title="Impact Score"
+                    >
+                      <span className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        finding.impactScore >= 85 ? "bg-green-700" : finding.impactScore >= 70 ? "bg-amber-700" : finding.impactScore >= 65 ? "bg-coral-700" : "bg-red-700",
+                      )} />
+                      {finding.impactScore}
                     </span>
                   )}
                   {Array.isArray(finding.tags) &&
@@ -323,6 +441,6 @@ export default async function FindingsPage({ searchParams }: PageProps) {
           ))}
         </div>
       )}
-    </main>
+    </div>
   );
 }
