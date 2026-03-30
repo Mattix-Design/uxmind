@@ -9,19 +9,21 @@ export default async function HomePage() {
   const [
     { count: researchCount },
     { count: lawsCount },
-    { count: mythsCount },
-    { data: sources },
+    { data: entriesWithFindings },
   ] = await Promise.all([
     supabase.from("research_entries").select("*", { count: "exact", head: true }).eq("status", "published"),
     supabase.from("ux_laws").select("*", { count: "exact", head: true }),
-    supabase.from("debunked_myths").select("*", { count: "exact", head: true }),
-    supabase.from("research_entries").select("source_name").eq("status", "published"),
+    supabase.from("research_entries").select("source_name, key_findings").eq("status", "published"),
   ]);
 
   const safeResearchCount = researchCount ?? 0;
   const safeLawsCount = lawsCount ?? 0;
-  const safeMythsCount = mythsCount ?? 0;
-  const uniqueSources = new Set(sources?.map((s) => s.source_name)).size;
+  const allEntries = entriesWithFindings ?? [];
+  const safeFindingsCount = allEntries.reduce(
+    (sum, e) => sum + (Array.isArray(e.key_findings) ? e.key_findings.length : 0),
+    0
+  );
+  const uniqueSources = new Set(allEntries.map((s) => s.source_name)).size;
 
   return (
     <div className="flex flex-col">
@@ -89,8 +91,8 @@ export default async function HomePage() {
         <div className="mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 divide-x divide-surface-700/50">
           {[
             { value: safeResearchCount, label: "Research Studies" },
+            { value: safeFindingsCount, label: "Key Findings" },
             { value: safeLawsCount, label: "UX Laws" },
-            { value: safeMythsCount, label: "Debunked Myths" },
             { value: uniqueSources, label: "Sources" },
           ].map((stat) => (
             <div key={stat.label} className="px-4 py-6 text-center">
@@ -287,6 +289,68 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* The problem */}
+      <section className="border-y border-surface-700/50 bg-surface-800/50">
+        <div className="mx-auto max-w-6xl w-full px-4 py-16 sm:px-6">
+          <p className="text-xs font-semibold tracking-widest uppercase text-coral-500 mb-4 text-center">
+            THE PROBLEM
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary text-center mb-3">
+            AI is confidently making up UX advice.
+          </h2>
+          <p className="text-sm text-text-secondary text-center max-w-2xl mx-auto mb-12 leading-relaxed">
+            Designers and product teams increasingly rely on AI for UX guidance. The problem?
+            LLMs fabricate research citations, invent statistics, and present opinion as evidence.
+            The result is &ldquo;AI slop&rdquo; — plausible-sounding advice with no basis in reality.
+          </p>
+
+          <div className="grid gap-6 sm:grid-cols-3">
+            <div className="rounded-2xl border border-card-border/50 bg-card p-6">
+              <p className="text-3xl sm:text-4xl font-extrabold text-coral-500 tabular-nums tracking-tight">1–30%</p>
+              <p className="mt-2 text-sm font-semibold text-text-primary">of LLM outputs contain hallucinations</p>
+              <p className="mt-2 text-xs text-text-muted leading-relaxed">
+                Even with source material provided, models fabricate facts at significant rates — tested across 7,700+ articles spanning law, medicine, finance, and technology.
+              </p>
+              <p className="mt-3 text-[11px] text-text-muted">
+                Source: Vectara Hallucination Leaderboard (HHEM), 2024
+              </p>
+            </div>
+            <div className="rounded-2xl border border-card-border/50 bg-card p-6">
+              <p className="text-3xl sm:text-4xl font-extrabold text-coral-500 tabular-nums tracking-tight">43%</p>
+              <p className="mt-2 text-sm font-semibold text-text-primary">of GPT-4 legal citations were fabricated</p>
+              <p className="mt-2 text-xs text-text-muted leading-relaxed">
+                In a Stanford study, GPT-4 hallucinated nearly half its legal references. Even specialist legal AI tools hallucinated 17–33% of the time. If it happens in law, it happens in UX.
+              </p>
+              <p className="mt-3 text-[11px] text-text-muted">
+                Source: Magesh et al., Stanford RegLab &amp; HAI, 2024
+              </p>
+            </div>
+            <div className="rounded-2xl border border-card-border/50 bg-card p-6">
+              <p className="text-3xl sm:text-4xl font-extrabold text-coral-500 tabular-nums tracking-tight">1,000+</p>
+              <p className="mt-2 text-sm font-semibold text-text-primary">AI content farms posing as news sites</p>
+              <p className="mt-2 text-xs text-text-muted leading-relaxed">
+                AI-generated &ldquo;content farms&rdquo; now flood search results across 16 languages — recycling, rephrasing, and fabricating information at scale. UX advice is no exception.
+              </p>
+              <p className="mt-3 text-[11px] text-text-muted">
+                Source: NewsGuard AI Tracking Center, 2024
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-12 rounded-2xl border border-coral-500/20 bg-coral-500/[0.04] p-6 sm:p-8">
+            <h3 className="text-lg font-semibold text-text-primary mb-2">
+              UXMind is the antidote to AI slop in UX.
+            </h3>
+            <p className="text-sm text-text-secondary leading-relaxed max-w-3xl">
+              Instead of asking a chatbot that invents research, start with a knowledge base built on real evidence.
+              Every finding in UXMind is traceable to a published study. Every study is scored for methodological rigour
+              and practical impact. When you use UXMind as your starting point, your design decisions are grounded in
+              reality — not in what an LLM thought sounded convincing.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Browse cards */}
       <section className="mx-auto max-w-6xl w-full px-4 py-16 sm:px-6">
         <div className="grid gap-6 sm:grid-cols-3">
@@ -313,15 +377,15 @@ export default async function HomePage() {
               {safeLawsCount} cognitive principles governing human-interface interaction.
             </p>
           </Link>
-          <Link href="/myths" className="group rounded-2xl border border-card-border/50 bg-card p-6 shadow-sm hover:shadow-md hover:bg-card-hover transition-all focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none">
+          <Link href="/findings" className="group rounded-2xl border border-card-border/50 bg-card p-6 shadow-sm hover:shadow-md hover:bg-card-hover transition-all focus-visible:ring-2 focus-visible:ring-coral-500 focus-visible:ring-offset-2 focus-visible:outline-none">
             <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-coral-500/10">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-coral-500" aria-hidden="true">
-                <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                <path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-text-primary group-hover:text-coral-500 transition-colors">Debunked Myths</h3>
+            <h3 className="text-xl font-semibold text-text-primary group-hover:text-coral-500 transition-colors">Key Findings</h3>
             <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-              {safeMythsCount} common UX assumptions the evidence doesn&apos;t support.
+              {safeFindingsCount}+ actionable insights extracted from vetted research studies.
             </p>
           </Link>
         </div>
